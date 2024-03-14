@@ -1,0 +1,40 @@
+.outer-container {
+  height: 420px; /* Set a fixed height for the outer container */
+  border: 1px solid #ccc; /* Optional: Add border for better visibility */
+}
+
+.size-72 {
+  /* Add your styles for the inner content divs here */
+  width: 288px;
+  height: 288px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+@media (min-width: 1024px) {
+  .outer-container {
+    height: 610px; /* Set a fixed height for the outer container */
+    overflow-y: auto; /* Enable vertical scrollbar */
+    border: 1px solid #ccc; /* Optional: Add border for better visibility */
+  }
+}
+
+@media (min-width: 768px) {
+  .outer-container {
+    height: 610px; /* Set a fixed height for the outer container */
+
+    border: 1px solid #ccc; /* Optional: Add border for better visibility */
+  }
+
+  .size-72 {
+    /* Add your styles for the inner content divs here */
+    width: 256;
+    height: 256;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+}
