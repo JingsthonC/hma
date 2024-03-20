@@ -28,7 +28,7 @@ export default function BillingSummaries() {
 function BillingSummaryList({ billingSummaries }) {
   return (
     <div className="">
-      <h2 className="mb-4 text-2xl font-semibold">Transaction Data List</h2>
+      <h2 className="mb-4 text-2xl font-semibold">Billing Summary List</h2>
       <ul className="list-inside list-disc rounded-md border border-gray-300 bg-white p-4">
         {billingSummaries.map((billing_summary) => (
           <li key={billing_summary.id} className="hover:underline">

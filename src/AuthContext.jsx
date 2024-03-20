@@ -1,6 +1,6 @@
 //1. import the createContext and useContext  hooks from React
 
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
@@ -39,6 +39,23 @@ function AuthProvider({ children }) {
     isAuthenticated: storedAuth,
   });
 
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event) => {
+  //     // Logout the user before unloading the page
+  //     logout();
+  //     // Cancel the event
+  //     event.preventDefault();
+  //     // Chrome requires returnValue to be set
+  //     event.returnValue = "";
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
+
   async function login(username, password) {
     console.log(`login in authprovider receiveds username${username}`);
     try {
@@ -54,6 +71,7 @@ function AuthProvider({ children }) {
       );
       console.log(response);
       const user = response.data;
+      console.log(`user ${JSON.stringify(user.email)}`);
 
       dispatch({ type: "login", payload: { user } });
       // // Persist user information in localStorage
@@ -71,6 +89,7 @@ function AuthProvider({ children }) {
     console.log(`loggedout is pressed`);
     localStorage.removeItem("user");
     localStorage.setItem("isAuthenticated", JSON.stringify(false));
+    localStorage.removeItem("isAuthenticated");
   }
   return (
     <AuthContext.Provider value={{ ...state, login, logout }}>

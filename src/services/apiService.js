@@ -57,7 +57,18 @@ const apiService = {
   deleteCategory: (id) => axios.delete(`${BASE_URL}/api/category/${id}`),
 
   // Transactions
+  // getAllTransactions: () => axios.get(`${BASE_URL}/api/transactions`),
+  // getTransactionById: (id) => axios.get(`${BASE_URL}/api/transactions/${id}`),
+  // addTransaction: (data) => axios.post(`${BASE_URL}/api/transactions`, data),
+  // updateTransaction: (id, data) =>
+  //   axios.put(`${BASE_URL}/api/transactions/${id}`, data),
+  // deleteTransaction: (id) => axios.delete(`${BASE_URL}/api/transactions/${id}`),
+
   getAllTransactions: () => axios.get(`${BASE_URL}/api/transactions`),
+  getSortedTransactions: () => axios.get(`${BASE_URL}/api/transactions/sort`),
+
+  getFilteredTransactions: (queryParams) =>
+    axios.get(`${BASE_URL}/api/transactions/filter`, { params: queryParams }),
   getTransactionById: (id) => axios.get(`${BASE_URL}/api/transactions/${id}`),
   addTransaction: (data) => axios.post(`${BASE_URL}/api/transactions`, data),
   updateTransaction: (id, data) =>

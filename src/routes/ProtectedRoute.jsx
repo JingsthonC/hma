@@ -3,7 +3,6 @@ import { useAuth } from "../AuthContext";
 import { useEffect } from "react";
 
 export default function ProtectedRoute({ children }) {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
   const { user } = useAuth();
   const navigate = useNavigate();
 

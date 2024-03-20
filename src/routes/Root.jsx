@@ -7,46 +7,106 @@ import { Outlet, Link } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import Sidebar from "../ui/Sidebar";
 import UserProfile from "../features/users/UserProfile";
+import logo from "/logo.png";
+
+// function Root() {
+//   const { user } = useAuth;
+
+//   return (
+//     <div className="App md:flex md:h-screen md:flex-col">
+//       <div className="flex flex-row flex-wrap justify-between bg-gradient-to-r from-white via-gray-500 to-red-500 px-5">
+//         <div className="md:60 h-24 w-full rounded sm:w-60 lg:w-60">
+//           <Link to={"dashboard"}>
+//             <img src={logo} alt="Logo" className="h-24 w-full" />
+//           </Link>
+//         </div>
+//         <div className="my-2 flex  items-center justify-between ">
+//           <div className="relative flex items-center">
+//             <input
+//               type="text"
+//               placeholder="Search..."
+//               className="w-full rounded border p-2 pl-8"
+//             />
+//             <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+//               <span role="img" aria-label="Search Icon">
+//                 🔍
+//               </span>
+//             </div>
+//           </div>
+//           <UserProfile user={user} />
+//         </div>
+//       </div>
+//       <div className="flex h-full flex-grow flex-wrap border-solid">
+//         <div className="basis-full border-2 border-solid border-white sm:basis-1/5 md:basis-1/5 xl:basis-1/5">
+//           <Sidebar />
+//         </div>
+//         <div className="border-2 border-solid border-white  bg-cover bg-center bg-no-repeat sm:basis-4/5 md:basis-4/5 xl:basis-4/5">
+//           <Outlet />
+//         </div>
+//       </div>
+//       {/* <div className="sticky flex flex-row flex-wrap justify-around bg-gradient-to-r from-white via-gray-500 to-red-500">
+//         <Footer />
+//         <HelpSupport />
+//       </div> */}
+//       <div className="sticky mt-auto flex flex-row flex-wrap justify-around bg-gradient-to-r from-white via-gray-500 to-red-500">
+//         <Footer />
+//         <HelpSupport />
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Root;
+
+//version 2
 
 function Root() {
   const { user } = useAuth;
 
   return (
-    <div className="App md:flex md:h-screen md:flex-col">
-      <div className="flex flex-row flex-wrap justify-between bg-gradient-to-r from-white via-gray-500 to-red-500 px-5">
-        <div className="md:60 h-24 w-full rounded sm:w-60 lg:w-60">
-          <Link to={"dashboard"}>
-            <img src="logo.png" alt="Logo" className="h-24 w-full" />
-          </Link>
+    <div className="flex min-h-screen flex-col">
+      <header className="flex-none">
+        <div className="flex flex-row flex-wrap justify-center bg-gradient-to-r from-white via-gray-500 to-red-500 px-5 md:justify-between">
+          <div className="md:60 h-24 w-full rounded sm:w-60 lg:w-60">
+            <Link to={"dashboard"}>
+              <img src={logo} alt="Logo" className="h-24 w-full" />
+            </Link>
+          </div>
+          <div className="my-2 flex items-center justify-between ">
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full rounded border p-2 pl-8"
+              />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-2">
+                <span role="img" aria-label="Search Icon">
+                  🔍
+                </span>
+              </div>
+            </div>
+            <UserProfile user={user} />
+          </div>
         </div>
-        <div className="my-2 flex  items-center justify-between ">
-          <div className="relative flex items-center">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full rounded border p-2 pl-8"
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-2">
-              <span role="img" aria-label="Search Icon">
-                🔍
-              </span>
+      </header>
+      <main className="flex-grow">
+        <div className="flex h-full flex-col border-solid md:flex-row">
+          <div className="basis-full border-2 border-solid border-white md:basis-1/5 lg:basis-1/5">
+            <Sidebar />
+          </div>
+          <div className="overflow-x-auto">
+            <div className="border-2 border-solid border-white  bg-cover bg-center bg-no-repeat sm:basis-4/5 md:basis-4/5 lg:basis-4/5">
+              <Outlet />
             </div>
           </div>
-          <UserProfile user={user} />
         </div>
-      </div>
-      <div className="flex h-full flex-grow flex-wrap border-solid">
-        <div className="basis-full border-2 border-solid border-white sm:basis-1/5 md:basis-1/5 xl:basis-1/5">
-          <Sidebar />
+      </main>
+      <footer className="sticky mt-auto flex-none">
+        <div className="flex flex-row flex-wrap justify-around bg-gradient-to-r from-white via-gray-500 to-red-500">
+          <Footer />
+          <HelpSupport />
         </div>
-        <div className="border-2 border-solid border-white  bg-cover bg-center bg-no-repeat sm:basis-4/5 md:basis-4/5 xl:basis-4/5">
-          <Outlet />
-        </div>
-      </div>
-      <div className="sticky flex flex-row flex-wrap justify-around bg-gradient-to-r from-white via-gray-500 to-red-500">
-        <Footer />
-        <HelpSupport />
-      </div>
+      </footer>
     </div>
   );
 }

@@ -12,14 +12,14 @@ const DatePicker = ({ label, onChange }) => {
   };
 
   return (
-    <div>
+    <div className="">
       <label
         htmlFor={label}
         className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
       >
         {label}
       </label>
-      <div className="relative max-w-sm">
+      <div className="">
         <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
           <svg
             className="h-4 w-4 text-gray-500 dark:text-gray-400"

@@ -10,6 +10,8 @@ import PairDataRowB from "../../ui/PairDataRowB";
 import MutatingSingleColumn from "../../ui/MutatingSingleColumn";
 import SelectStatus from "../../ui/SelectStatus";
 
+const storedUser = JSON.parse(localStorage.getItem("user"));
+
 export async function loader({ params }) {
   try {
     const accountsRes = await apiService.getAllAccounts();
@@ -81,10 +83,11 @@ export default function AddTransaction() {
     billing_summary_number: "",
     billing_summary_check_number: "",
     transaction_remarks: "",
+    email: storedUser.email && storedUser.email,
   };
 
   const [formData, setFormData] = useState(initialData);
-  const [selectedAccount, setSelectedAccount] = useState("Choose a account");
+  const [selectedAccount, setSelectedAccount] = useState("Choose an account");
   const [selectedPlateNumber, setSelectedPlateNumber] = useState(
     "Select Plate Number",
   );
@@ -96,6 +99,7 @@ export default function AddTransaction() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    alert(JSON.stringify(formData));
     try {
       const result = await action(formData);
       console.log("New Transaction:", result.newTransaction);
@@ -105,16 +109,32 @@ export default function AddTransaction() {
     }
   };
 
-  const handleAccountChange = (event) => {
-    const selectedValue = event.target.value;
+  // const handleAccountChange = (event) => {
+  //   const selectedValue = event.target.value;
+  //   setSelectedAccount(selectedValue);
+  //   setFormData((prevData) => ({ ...prevData, account_name: selectedValue }));
+  // };
+
+  const handleAccountChange = (selectedValue) => {
     setSelectedAccount(selectedValue);
-    setFormData((prevData) => ({ ...prevData, account_name: selectedValue }));
+    setFormData((prevData) => ({
+      ...prevData,
+      account_name: selectedValue,
+    }));
   };
 
-  const handlePlateChange = (event) => {
-    const selectedValue = event.target.value;
+  // const handlePlateChange = (event) => {
+  //   const selectedValue = event.target.value;
+  //   setSelectedPlateNumber(selectedValue);
+  //   setFormData((prevData) => ({ ...prevData, truck_plate: selectedValue }));
+  // };
+
+  const handlePlateChange = (selectedValue) => {
     setSelectedPlateNumber(selectedValue);
-    setFormData((prevData) => ({ ...prevData, truck_plate: selectedValue }));
+    setFormData((prevData) => ({
+      ...prevData,
+      truck_plate: selectedValue,
+    }));
   };
 
   const handleTruckTypeChange = (selectedValue) => {
@@ -232,151 +252,219 @@ export default function AddTransaction() {
 
   console.log(formData);
   return (
-    <div className="flex flex-wrap items-center gap-5">
-      <div className="mt-4 ">
-        <form className="mx-auto max-w-sm">
-          <label
-            htmlFor="accounts"
-            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Select an account
-          </label>
-          <select
-            id="accounts"
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            value={selectedAccount}
-            onChange={handleAccountChange}
-          >
-            <option value="Choose a account" disabled>
-              Choose a account
-            </option>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.account_name}>
-                {account.account_name}
-              </option>
-            ))}
-          </select>
-        </form>
+    <>
+      <div className="grid h-auto w-full grid-cols-3 gap-4">
+        <div className="bg-gray col-span-3 flex h-auto flex-col justify-between gap-2 border-2 border-solid p-2 md:flex-row">
+          <div className="w-full md:w-1/3">
+            {/* <form className="">
+              <label
+                htmlFor="accounts"
+                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Select an account
+              </label>
+              <select
+                id="accounts"
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                value={selectedAccount}
+                onChange={handleAccountChange}
+              >
+                <option value="Choose a account" disabled>
+                  Choose a account
+                </option>
+                {accounts.map((account) => (
+                  <option key={account.id} value={account.account_name}>
+                    {account.account_name}
+                  </option>
+                ))}
+              </select>
+            </form> */}
+            <SelectorComponent
+              label="Choose an account"
+              options={accounts.map((account) => ({
+                id: account.id,
+                value: account.account_name,
+                label: account.account_name,
+              }))}
+              selectedValue={selectedAccount}
+              onChange={handleAccountChange}
+            />
+          </div>
+          <div className="w-full md:w-1/3">
+            <SelectStatus
+              onStatusChange={handleStatusChange}
+              selectedStatus={formData.transaction_status}
+            />
+          </div>
+        </div>
+        <div className="col-span-3 flex flex-col gap-2 border-2 border-solid p-2 md:flex-row">
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            <DatePicker
+              label="Transaction Date"
+              onChange={handleTransDateChange}
+            />
+          </div>
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            {/* <form className="">
+              <label
+                htmlFor="truck_plates"
+                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Select Plate Number
+              </label>
+              <select
+                id="truck_plates"
+                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                value={selectedPlateNumber}
+                onChange={handlePlateChange}
+              >
+                <option value="Select Plate Number" disabled>
+                  Select Plate Number
+                </option>
+                {trucks.map((truck) => (
+                  <option key={truck.id} value={truck.truck_plate}>
+                    {truck.truck_plate}
+                  </option>
+                ))}
+              </select>
+            </form> */}
+            <SelectorComponent
+              label="Select Plate Number"
+              options={trucks.map((truck) => ({
+                id: truck.id,
+                value: truck.truck_plate,
+                label: truck.truck_plate,
+              }))}
+              selectedValue={selectedPlateNumber}
+              onChange={handlePlateChange}
+            />
+          </div>
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            <SelectorComponent
+              label="Select Truck Type"
+              options={truckTypes.map((truckType) => ({
+                id: truckType.id,
+                value: truckType.truck_type_name,
+                label: truckType.truck_type_name,
+              }))}
+              selectedValue={selectedTruckType}
+              onChange={handleTruckTypeChange}
+            />
+          </div>
+        </div>
+        <div className="col-span-3 flex  flex-col gap-2 border-2 border-solid p-2 md:flex-row">
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            <TextInput
+              label="Trip Ticket Number"
+              id="transaction_shipment_number"
+              placeholder=" Trip Ticket Number"
+              value={formData.transaction_trip_ticket_number}
+              onChange={handleTransTripTicketNumChange}
+              darkMode={false}
+            />
+          </div>
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            <SelectorComponent
+              label="Select Customer"
+              options={customers.map((customer) => ({
+                id: customer.id,
+                value: customer.customer_name,
+                label: customer.customer_name,
+              }))}
+              selectedValue={selectedCustomer}
+              onChange={handleCustomerChange}
+            />
+          </div>
+          <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
+            <SelectorComponent
+              label="Select Destination"
+              options={destinations.map((destination) => ({
+                id: destination.id,
+                value: destination.destination_name,
+                label: destination.destination_name,
+              }))}
+              selectedValue={selectedDestination}
+              onChange={handleDestinationChange}
+            />
+          </div>
+        </div>
+        <div className="bg-gray col-span-3 h-auto w-full border-2 border-solid p-2 md:w-1/3">
+          <TextInput
+            label="Transaction Shipment Number"
+            id="transaction_shipment_number"
+            placeholder=" Shipment Number"
+            value={formData.transaction_shipment_number}
+            onChange={handleTransShipmentNumChange}
+            darkMode={false}
+          />
+        </div>
+
+        <div className="col-span-3 h-auto w-full gap-2 border-2 border-gray-100 p-2">
+          <div className="grid h-auto grid-cols-3 gap-2">
+            <div className="col-span-3 h-auto w-full md:w-1/3 ">
+              <DatePicker
+                label="Sales Invoice Date"
+                onChange={handleSIDateChange}
+              />
+            </div>
+            <div className="col-span-3 md:col-span-2">
+              <PairDataRow
+                label1="Sales Invoice Number"
+                label2=" Sales Invoice Quantity"
+                fieldName1="transaction_sales_invoice_number"
+                fieldName2="transaction_sales_invoice_qty"
+                onFormattedDataChange={handleFormattedDataChange}
+              />
+            </div>
+            <div className="col-span-3 md:col-span-1">
+              <MutatingSingleColumn
+                label="Delivery Receipt Number"
+                fieldName="transaction_delivery_receipt_number"
+                onFormattedDataChange={handleSingleFormattedDataChange}
+              />
+            </div>
+            <div className="col-span-3 h-auto w-full">
+              <TextInput
+                label="Number of Cases"
+                id="transaction_number_of_cases"
+                placeholder="Number of Cases"
+                value={formData.transaction_number_of_cases}
+                onChange={handleTransNumOfCases}
+                darkMode={false}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="bg-gray col-span-3 h-auto w-full border-2 border-solid p-2 md:w-2/3">
+          <PairDataRowB
+            label1="Deduction Amount"
+            label2="Deduction Remarks"
+            fieldName1="transaction_deduction_amount"
+            fieldName2="transaction_deduction_remarks"
+            onFormattedDataChange={handleFormattedDataChangeB}
+          />
+        </div>
+
+        <div className="bg-gray col-span-3 h-auto border-2 border-solid p-2">
+          <TextArea
+            label="Transaction Remarks"
+            value={formData.transaction_remarks}
+            onChange={handleRemarksChange}
+          />
+        </div>
+        <div className="col-span-3 flex h-auto w-full justify-center">
+          <Form onSubmit={handleSubmit}>
+            <button
+              type="submit"
+              className="group relative mb-2 me-2 inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-pink-500 to-orange-400 p-0.5 text-sm font-medium text-gray-900 hover:text-white focus:outline-none focus:ring-4 focus:ring-pink-200 group-hover:from-pink-500 group-hover:to-orange-400 dark:text-white dark:focus:ring-pink-800"
+            >
+              <span className="relative w-40 rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-gray-900">
+                Save
+              </span>
+            </button>
+          </Form>
+        </div>
       </div>
-      {/* for trucks */}
-      <div className="mt-4 ">
-        <form className="mx-auto max-w-sm">
-          <label
-            htmlFor="truck_plates"
-            className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Select Plate Number
-          </label>
-          <select
-            id="truck_plates"
-            className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-            value={selectedPlateNumber}
-            onChange={handlePlateChange}
-          >
-            <option value="Select Plate Number" disabled>
-              Select Plate Number
-            </option>
-            {trucks.map((truck) => (
-              <option key={truck.id} value={truck.truck_plate}>
-                {truck.truck_plate}
-              </option>
-            ))}
-          </select>
-        </form>
-      </div>
-      <SelectorComponent
-        label="Select Truck Type"
-        options={truckTypes.map((truckType) => ({
-          id: truckType.id,
-          value: truckType.truck_type_name,
-          label: truckType.truck_type_name,
-        }))}
-        selectedValue={selectedTruckType}
-        onChange={handleTruckTypeChange}
-      />
-      <SelectorComponent
-        label="Select Customer"
-        options={customers.map((customer) => ({
-          id: customer.id,
-          value: customer.customer_name,
-          label: customer.customer_name,
-        }))}
-        selectedValue={selectedCustomer}
-        onChange={handleCustomerChange}
-      />
-      <SelectorComponent
-        label="Select Destination"
-        options={destinations.map((destination) => ({
-          id: destination.id,
-          value: destination.destination_name,
-          label: destination.destination_name,
-        }))}
-        selectedValue={selectedDestination}
-        onChange={handleDestinationChange}
-      />
-      <DatePicker label="Transaction Date" onChange={handleTransDateChange} />
-      <DatePicker label="Sales Invoice Date" onChange={handleSIDateChange} />
-      <TextInput
-        label="Transaction Shipment Number"
-        id="transaction_shipment_number"
-        placeholder=" Shipment Number"
-        value={formData.transaction_shipment_number}
-        onChange={handleTransShipmentNumChange}
-        darkMode={false}
-      />
-      <TextInput
-        label="Trip Ticket Number"
-        id="transaction_shipment_number"
-        placeholder=" Trip Ticket Number"
-        value={formData.transaction_trip_ticket_number}
-        onChange={handleTransTripTicketNumChange}
-        darkMode={false}
-      />
-      f
-      <TextInput
-        label="Number of Cases"
-        id="transaction_number_of_cases"
-        placeholder="Number of Cases"
-        value={formData.transaction_number_of_cases}
-        onChange={handleTransNumOfCases}
-        darkMode={false}
-      />
-      <TextArea
-        label="Transaction Remarks"
-        value={formData.transaction_remarks}
-        onChange={handleRemarksChange}
-      />
-      <PairDataRow
-        label1="Sales Invoice Number"
-        label2=" Sales Invoice Quantity"
-        fieldName1="transaction_sales_invoice_number"
-        fieldName2="transaction_sales_invoice_qty"
-        onFormattedDataChange={handleFormattedDataChange}
-      />
-      <PairDataRowB
-        label1="Deduction Amount"
-        label2="Deduction Remarks"
-        fieldName1="transaction_deduction_amount"
-        fieldName2="transaction_deduction_remarks"
-        onFormattedDataChange={handleFormattedDataChangeB}
-      />
-      <MutatingSingleColumn
-        label="Delivery Receipt Number"
-        fieldName="transaction_delivery_receipt_number"
-        onFormattedDataChange={handleSingleFormattedDataChange}
-      />
-      <SelectStatus
-        onStatusChange={handleStatusChange}
-        selectedStatus={formData.transaction_status}
-      />
-      <Form onSubmit={handleSubmit}>
-        <button
-          type="submit"
-          className="mb-2 me-2 rounded-full bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Save
-        </button>
-      </Form>
-    </div>
+    </>
   );
 }

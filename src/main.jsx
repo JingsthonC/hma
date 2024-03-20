@@ -11,7 +11,9 @@ import Transactions, {
 import Transaction, {
   loader as transactionLoader,
 } from "./features/transactions/Transaction.jsx";
-import Dashboard from "./features/dashboard/Dashboard.jsx";
+import Dashboard, {
+  loader as dashboardDataLoader,
+} from "./features/dashboard/Dashboard.jsx";
 import Login from "./Login.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
@@ -38,6 +40,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
+        loader: dashboardDataLoader,
         element: <Dashboard />,
       },
       {
@@ -46,7 +49,7 @@ const router = createBrowserRouter([
         element: <Transactions />,
       },
       {
-        path: "transactions/:transactionId",
+        path: "transactions/:transactionNumber",
         loader: transactionLoader,
         element: <Transaction />,
       },

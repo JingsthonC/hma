@@ -1,6 +1,11 @@
 // SelectorComponent.jsx
 
-const SelectorComponent = ({ label, options, selectedValue, onChange }) => {
+const SelectorComponentIndexBase = ({
+  label,
+  options,
+  selectedValue,
+  onChange,
+}) => {
   const handleOptionChange = (event) => {
     const selectedValue = event.target.value;
     if (onChange) {
@@ -26,8 +31,8 @@ const SelectorComponent = ({ label, options, selectedValue, onChange }) => {
           <option value={label} disabled>
             {label}
           </option>
-          {options.map((option) => (
-            <option key={option.id || option.index} value={option.value}>
+          {options.map((option, index) => (
+            <option key={index} value={option.value}>
               {option.label}
             </option>
           ))}
@@ -37,4 +42,4 @@ const SelectorComponent = ({ label, options, selectedValue, onChange }) => {
   );
 };
 
-export default SelectorComponent;
+export default SelectorComponentIndexBase;

@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../AuthContext";
+import avatar from "/avatars/vitote.jpg";
 
 const UserProfile = () => {
   const { user, logout } = useAuth();
-  const avatarPath = "avatars/vitote.jpg";
+  // const avatarPath = "avatars/vitote.jpg";
 
   const navigate = useNavigate();
 
@@ -17,11 +18,8 @@ const UserProfile = () => {
   return (
     <div className="flex items-center pl-4">
       {user && user.user && <span className="px-2">{user.user.email}</span>}
-      <img
-        src={avatarPath}
-        alt="User Avatar"
-        className="h-8 w-8 rounded-full"
-      />
+      <img src={avatar} alt="User Avatar" className="h-8 w-8 rounded-full" />
+
       <button
         onClick={handleLogout}
         className="mx-3 rounded bg-red-500 px-4 py-2 font-bold text-white hover:bg-red-700"
