@@ -1,6 +1,7 @@
 // SelectorComponent.jsx
 
 const SelectorComponentIndexBase = ({
+  initialOption,
   label,
   options,
   selectedValue,
@@ -28,8 +29,8 @@ const SelectorComponentIndexBase = ({
           value={selectedValue}
           onChange={handleOptionChange}
         >
-          <option value={label} disabled>
-            {label}
+          <option value={initialOption} disabled>
+            {initialOption}
           </option>
           {options.map((option, index) => (
             <option key={index} value={option.value}>

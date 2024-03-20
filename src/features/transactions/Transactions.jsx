@@ -40,18 +40,23 @@ export async function loader() {
       trucksRes,
       customerRes,
       destinationsRes,
+      truckTypesRes,
     ] = await Promise.all([
       apiService.getAllTransactions(),
       apiService.getAllAccounts(),
       apiService.getAllTrucks(),
       apiService.getAllCustomers(),
       apiService.getAllDestinations(),
+      apiService.getAllTruckTypes(),
     ]);
 
     return {
       transactions: transactionsRes.data,
       accounts: accountsRes.data,
       trucks: trucksRes.data,
+      customers: customerRes.data,
+      destinations: destinationsRes.data,
+      truckTypes: truckTypesRes.data,
     };
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -60,16 +65,24 @@ export async function loader() {
 }
 
 export default function Transactions() {
-  const { transactions, accounts, trucks } = useLoaderData();
-
-  // const initialQuery = {};
-
+  const {
+    transactions,
+    accounts,
+    trucks,
+    customers,
+    destinations,
+    truckTypes,
+  } = useLoaderData();
+  // transactions loaded
   const [dataLoaded, setDataLoaded] = useState(transactions);
-  const [loadedPlates, setLoadedPlates] = useState([]);
+  // const [loadedPlates, setLoadedPlates] = useState([]);
+  const [loadedFilterData, setLoadedFilterData] = useState([]);
+  const [level2Query, setLevel2Query] = useState("All");
   const [selectedAccount, setSelectedAccount] = useState("Choose an account");
-  const [selectedPlateNumber, setSelectedPlateNumber] = useState(
-    "Select Plate Number",
-  );
+  // const [selectedPlateNumber, setSelectedPlateNumber] = useState(
+  //   "Select Plate Number",
+  // );
+  const [selectedKey, setSelectedKey] = useState("");
   const [queryParams, setQueryParams] = useState({});
   const [selectedFilter, setSelectedFilter] = useState(
     "Select Filter Category",
@@ -106,6 +119,7 @@ export default function Transactions() {
     }
   }, [queryParams]); // Run this effect whenever queryParams change
 
+  console.log(truckTypes);
   // Extract unique plate numbers from dataLoaded
 
   // const plateNumbersSet = new Set();
@@ -179,8 +193,11 @@ export default function Transactions() {
   // };
 
   const handleAccountChange = (selectedValue) => {
-    setSelectedPlateNumber("Select Plate Number"); // Reset selectedPlateNumber
+    // setSelectedPlateNumber("Select Plate Number"); // Reset selectedPlateNumber
+    setSelectedFilter(() => "Select Filter Category");
     setSelectedAccount(selectedValue);
+    setFilterCategory(() => "");
+    setLevel2Query(() => "All");
 
     async function fetchData() {
       try {
@@ -196,28 +213,29 @@ export default function Transactions() {
           key: item.id,
         }));
         setDataLoaded(filteredTransactions);
+        setLoadedFilterData(filteredTransactions);
         setQueryParams(updatedQueryParams); // Update the queryParams state after setting the data
 
-        const plateNumbersSet = new Set();
-        filteredTransactions.slice().forEach((item) => {
-          plateNumbersSet.add(item.truck_plate);
-        });
+        // const plateNumbersSet = new Set();
+        // filteredTransactions.slice().forEach((item) => {
+        //   plateNumbersSet.add(item.truck_plate);
+        // });
 
-        const uniquePlateNumbers = Array.from(plateNumbersSet).map(
-          (plateNumber, index) => ({
-            id: index, // Assign unique ID if needed
-            value: plateNumber,
-            label: plateNumber,
-          }),
-        );
+        // const uniquePlateNumbers = Array.from(plateNumbersSet).map(
+        //   (plateNumber, index) => ({
+        //     id: index, // Assign unique ID if needed
+        //     value: plateNumber,
+        //     label: plateNumber,
+        //   }),
+        // );
 
-        const truckIds = uniquePlateNumbers.map(({ value }) => ({
-          plateNumber: value,
-          truckId:
-            trucks.find((truck) => truck.truck_plate === value)?.id ?? null,
-        }));
+        // const truckIds = uniquePlateNumbers.map(({ value }) => ({
+        //   plateNumber: value,
+        //   truckId:
+        //     trucks.find((truck) => truck.truck_plate === value)?.id ?? null,
+        // }));
 
-        setLoadedPlates(truckIds);
+        // setLoadedPlates(truckIds);
       } catch (error) {
         console.error("Error filtering transactions:", error);
       }
@@ -239,18 +257,23 @@ export default function Transactions() {
         label: value,
       }),
     );
-
     return uniqueProperties;
   }
+
+  function extractUniqueID(value, propertyName, referenceArray) {
+    const propertyId =
+      referenceArray.find((obj) => obj[propertyName] === value)?.id ?? null;
+    return propertyId;
+  }
   //dynamic filter data
-  const processFilterData = (filterCategory) => {
-    console.log("filter category", filterCategory);
+  const processFilterData = (filterKey) => {
+    console.log("filter key", filterKey);
     async function fetchData() {
       try {
-        // Reset queryParams inside the async function
-        // setQueryParams({});
-
-        // const updatedQueryParams = { account_id: selectedValue };
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          truck_id: selectedValue,
+        }));
         const response =
           await apiService.getFilteredTransactions(updatedQueryParams);
         const data = response.data;
@@ -298,33 +321,56 @@ export default function Transactions() {
 
   // Function to handle filter category change
   const handleFilterChange = (selectedValue) => {
+    setQueryParams({ account_id: selectedAccount });
     setSelectedFilter(selectedValue);
-    processFilterData(selectedValue);
     console.log(selectedValue);
     // Based on the selected category, set the options
     switch (selectedValue) {
       case "Transaction Date":
         setFilterCategory("Transaction Date");
-
-        setQueryParams((prevQuery) => ({
-          ...prevQuery,
-          transaction_date: selectedValue,
-        }));
+        setSelectedKey("transaction_date");
+        setLevel2Query(() => "All");
+        setFilterData(
+          extractUniqueProperties(loadedFilterData, "transaction_date"),
+        );
         break;
       case "Customer Name":
         setFilterCategory("Customer Name");
+        setSelectedKey("customer_id");
+        setLevel2Query(() => "All");
+        setFilterData(
+          extractUniqueProperties(loadedFilterData, "customer_name"),
+        );
         break;
       case "Destination Name":
         setFilterCategory("Destination Name");
+        setSelectedKey("destination_id");
+        setLevel2Query(() => "All");
+        setFilterData(
+          extractUniqueProperties(loadedFilterData, "destination_name"),
+        );
         break;
       case "Plate Number":
         setFilterCategory("Plate Number");
+        setSelectedKey("truck_id");
+        setLevel2Query(() => "All");
+        setFilterData(extractUniqueProperties(loadedFilterData, "truck_plate"));
         break;
       case "Truck Type":
         setFilterCategory("Truck Type");
+        setSelectedKey("truck_type_id");
+        setLevel2Query(() => "All");
+        setFilterData(
+          extractUniqueProperties(loadedFilterData, "truck_type_name"),
+        );
         break;
       case "Status":
         setFilterCategory("Status");
+        setSelectedKey("transaction_status");
+        setLevel2Query(() => "All");
+        setFilterData(
+          extractUniqueProperties(loadedFilterData, "transaction_status"),
+        );
         break;
       // Add more cases for other filter categories
       default:
@@ -332,9 +378,63 @@ export default function Transactions() {
     }
   };
 
-  console.log("data loaded", dataLoaded);
-  console.log("query params", queryParams);
-  console.log("loadedPlates", loadedPlates);
+  const handleSelectFilter = (selectedValue) => {
+    setLevel2Query(selectedValue);
+    console.log("selected key in select filter", selectedKey);
+    console.log(`selected value ${selectedValue}`);
+    switch (selectedKey) {
+      case "transaction_date":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          transaction_date: selectedValue,
+        }));
+        break;
+      case "transaction_status":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          transaction_status: selectedValue,
+        }));
+        break;
+      case "customer_id":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          customer_id: extractUniqueID(
+            selectedValue,
+            "customer_name",
+            customers,
+          ),
+        }));
+        break;
+      case "destination_id":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          destination_id: extractUniqueID(
+            selectedValue,
+            "destination_name",
+            destinations,
+          ),
+        }));
+        break;
+      case "truck_id":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          truck_id: extractUniqueID(selectedValue, "truck_plate", trucks),
+        }));
+        break;
+      case "truck_type_id":
+        setQueryParams((prevQuery) => ({
+          ...prevQuery,
+          truck_type_id: extractUniqueID(
+            selectedValue,
+            "truck_type_name",
+            truckTypes,
+          ),
+        }));
+        break;
+      default:
+        setFilterCategory("");
+    }
+  };
 
   return (
     <div>
@@ -374,14 +474,15 @@ export default function Transactions() {
                 {selectedFilter !== "Select Filter Category" && (
                   <SelectorComponentIndexBase
                     label={`Select ${filterCategory}`}
-                    options={loadedPlates.map((truck, index) => ({
+                    initialOption={"All"}
+                    options={filterData.map((data, index) => ({
                       key: index, // Ensure each option has a unique key
-                      id: truck.truckId, // Assign truckId as id
-                      value: truck.truckId, // Assign plateNumber as value
-                      label: truck.plateNumber, // Assign plateNumber as label
+                      id: data.id, // Assign truckId as id
+                      value: data.value, // Assign plateNumber as value
+                      label: data.value, // Assign plateNumber as label
                     }))}
-                    selectedValue={selectedPlateNumber}
-                    onChange={handlePlateChange}
+                    selectedValue={level2Query}
+                    onChange={handleSelectFilter}
                   />
                 )}
               </>
