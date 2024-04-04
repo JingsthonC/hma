@@ -28,7 +28,7 @@
 
 import { useState, useEffect } from "react";
 
-const SelectStatus = ({ onStatusChange, selectedStatus }) => {
+const SelectStatus = ({ onStatusChange, selectedStatus, isDisabled }) => {
   const [selectedValue, setSelectedValue] = useState(selectedStatus);
 
   const handleSelectChange = (e) => {
@@ -44,6 +44,7 @@ const SelectStatus = ({ onStatusChange, selectedStatus }) => {
   return (
     <div className="w-full">
       <select
+        disabled={isDisabled}
         value={selectedValue}
         onChange={handleSelectChange}
         className="block w-full rounded border border-gray-400 bg-white px-4 py-2 leading-tight focus:border-gray-500 focus:outline-none"

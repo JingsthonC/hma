@@ -3,40 +3,32 @@ import apiService from "../../services/apiService";
 
 export async function loader({ params }) {
   try {
-    const response = await apiService.getBillingSummaryById(
-      params.billingSummaryId,
+    const response = await apiService.getSupplierBillingById(
+      params.supplierBillingId,
     );
-    const billing_summary = response.data;
-    // const billingDate = billing_summary.billing_summary_create_date;
+    const supplier_billing = response.data;
+    // const billingDate = supplier_billing.supplier_billing_create_date;
     // Extract the billed transactions array
     const billed_transactions =
-      billing_summary.billing_summary_billed_transactions;
+      supplier_billing.supplier_billing_included_transactions;
 
     const withBillingTransRes =
       await apiService.getTransactionsByNumbers(billed_transactions);
     const transactions = withBillingTransRes.data;
-    return { transactions, billing_summary }; // Update the state with the fetched data
+    return { transactions, supplier_billing }; // Update the state with the fetched data
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 }
 
-const BillingSummary = () => {
-  const { transactions, billing_summary } = useLoaderData();
-  console.log(billing_summary);
+export default function SupplierBilling() {
+  const { transactions, supplier_billing } = useLoaderData();
+  console.log(supplier_billing);
   return (
     <div className="flex flex-col justify-items-stretch">
-      <Link to={`edit`}>
-        <button
-          className="mb-2 me-2 rounded-lg bg-gradient-to-r from-green-400 via-green-500 to-green-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-br focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800"
-          type="submit"
-        >
-          Edit
-        </button>
-      </Link>
       <div className="flex justify-between px-5">
         <h2 className="mb-4 text-2xl font-semibold">
-          {billing_summary.billing_summary_create_date}
+          {supplier_billing.supplier_billing_date}
         </h2>
       </div>
       <div className="overflow-x-auto">
@@ -140,34 +132,34 @@ const BillingSummary = () => {
           <tbody>
             <tr>
               <td className="border border-gray-400 px-4 py-2 text-left">
-                NET AMOUNT
+                BILLING AMOUNT
               </td>
               <td className="border border-gray-400 px-4 py-2 text-right">
-                P {billing_summary.billing_summary_net_amount}
+                P {supplier_billing.supplier_billing_amount}
               </td>
             </tr>
             <tr>
               <td className="border border-gray-400 px-4 py-2 text-left">
-                ADD 12% VAT
+                DEDUCT AMOUNT
               </td>
               <td className="border border-gray-400 px-4 py-2 text-right">
-                {billing_summary.billing_summary_value_added_tax}
+                {supplier_billing.supplier_billing_deduct_amount}
               </td>
             </tr>
             <tr>
               <td className="border border-gray-400 px-4 py-2 text-left">
-                GROSS AMOUNT
+                PAYABLE AMOUNT
               </td>
               <td className="border border-gray-400 px-4 py-2 text-right">
-                {billing_summary.billing_summary_gross_amount}
+                {supplier_billing.supplier_billing_net}
               </td>
             </tr>
-            <tr>
+            {/* <tr>
               <td className="border border-gray-400 px-4 py-2 text-left">
                 LESS 2% WT
               </td>
               <td className="border border-gray-400 px-4 py-2 text-right">
-                {billing_summary.billing_summary_withholding_tax}
+                {supplier_billing.supplier_billing_withholding_tax}
               </td>
             </tr>
             <tr>
@@ -175,13 +167,12 @@ const BillingSummary = () => {
                 NET PAYABLES P
               </td>
               <td className="border border-gray-400 px-4 py-2 text-right">
-                {billing_summary.billing_summary_net_payables}
+                {supplier_billing.supplier_billing_net_payables}
               </td>
-            </tr>
+            </tr> */}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
-export default BillingSummary;
+}

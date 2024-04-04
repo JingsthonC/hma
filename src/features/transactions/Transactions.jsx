@@ -1,37 +1,15 @@
 import apiService from "../../services/apiService";
-import { Link, NavLink, useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import SelectorComponent from "../../ui/SelectorComponent";
 import { useState, useEffect } from "react";
 import SelectorComponentIndexBase from "../../ui/SelectorComponentIndexBase";
-import { data } from "autoprefixer";
+import TransactionTable from "./TransactionTable";
+import {
+  extractUniqueProperties,
+  extractUniqueID,
+} from "../../services/extractorService";
 
-// export async function loader() {
-//   try {
-//     const response = await apiService.getAllTransactions();
-//     const data = response.data;
-//     const transactions = data.map((item) => ({ ...item, key: item.id }));
-
-//     const accountsRes = await apiService.getAllAccounts();
-//     const accountsData = accountsRes.data;
-//     const accounts = accountsData.map((item) => ({ ...item, key: item.id }));
-
-//     const trucksRes = await apiService.getAllTrucks();
-//     const trucksData = trucksRes.data;
-//     const trucks = trucksData.map((item) => ({ ...item, key: item.id }));
-
-//     return {
-//       accounts: accounts,
-//       transactions: transactions,
-//       trucks: trucks,
-//       // truckTypes: truckTypes,
-//       // customers: customers,
-//       // destinations: destinations,
-//     }; // Update the state with the fetched data
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//   }
-// }
-
+// eslint-disable-next-line react-refresh/only-export-components
 export async function loader() {
   try {
     const [
@@ -73,15 +51,11 @@ export default function Transactions() {
     destinations,
     truckTypes,
   } = useLoaderData();
-  // transactions loaded
+
   const [dataLoaded, setDataLoaded] = useState(transactions);
-  // const [loadedPlates, setLoadedPlates] = useState([]);
   const [loadedFilterData, setLoadedFilterData] = useState([]);
   const [level2Query, setLevel2Query] = useState("All");
   const [selectedAccount, setSelectedAccount] = useState("Choose an account");
-  // const [selectedPlateNumber, setSelectedPlateNumber] = useState(
-  //   "Select Plate Number",
-  // );
   const [selectedKey, setSelectedKey] = useState("");
   const [queryParams, setQueryParams] = useState({});
   const [selectedFilter, setSelectedFilter] = useState(
@@ -89,6 +63,7 @@ export default function Transactions() {
   );
   const [filterData, setFilterData] = useState({});
   const [filterCategory, setFilterCategory] = useState("");
+  const [showTable, setShowTable] = useState(false);
   const filterOptions = [
     { id: 1, title: "Transaction Date" },
     { id: 2, title: "Customer Name" },
@@ -98,99 +73,7 @@ export default function Transactions() {
     { id: 6, title: "Status" },
   ];
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await apiService.getFilteredTransactions(queryParams);
-        const data = response.data;
-        const filteredTransactions = data.map((item) => ({
-          ...item,
-          key: item.id,
-        }));
-        setDataLoaded(filteredTransactions);
-      } catch (error) {
-        console.error("Error filtering transactions:", error);
-      }
-    }
-
-    // Fetch data only if queryParams change
-    if (Object.keys(queryParams).length !== 0) {
-      fetchData();
-    }
-  }, [queryParams]); // Run this effect whenever queryParams change
-
-  console.log(truckTypes);
-  // Extract unique plate numbers from dataLoaded
-
-  // const plateNumbersSet = new Set();
-  // dataLoaded.slice().forEach((item) => {
-  //   plateNumbersSet.add(item.truck_plate);
-  // });
-
-  // const uniquePlateNumbers = Array.from(plateNumbersSet).map(
-  //   (plateNumber, index) => ({
-  //     id: index, // Assign unique ID if needed
-  //     value: plateNumber,
-  //     label: plateNumber,
-  //   }),
-  // );
-
-  // const truckIds = uniquePlateNumbers.map(({ value }) => ({
-  //   plateNumber: value,
-  //   truckId: trucks.find((truck) => truck.truck_plate === value)?.id ?? null, // Find truck ID based on truck_plate
-  // }));
-  // useEffect(() => {
-  //   setQueryParams({});
-  // }, [selectedAccount]);
-
-  // useEffect(() => {
-  //   const plateNumbersSet = new Set();
-  //   dataLoaded.slice().forEach((item) => {
-  //     plateNumbersSet.add(item.truck_plate);
-  //   });
-
-  //   const uniquePlateNumbers = Array.from(plateNumbersSet).map(
-  //     (plateNumber, index) => ({
-  //       id: index, // Assign unique ID if needed
-  //       value: plateNumber,
-  //       label: plateNumber,
-  //     }),
-  //   );
-
-  //   const truckIds = uniquePlateNumbers.map(({ value }) => ({
-  //     plateNumber: value,
-  //     truckId: trucks.find((truck) => truck.truck_plate === value)?.id ?? null,
-  //   }));
-
-  //   setLoadedPlates(truckIds);
-  //   // Do something with uniquePlateNumbers and truckIds here, if needed
-  // }, [dataLoaded, trucks]);
-
-  // const handleAccountChange = (selectedValue) => {
-  //   setSelectedPlateNumber("Select Plate Number"); // Reset selectedPlateNumber
-  //   setQueryParams({});
-  //   setSelectedAccount(selectedValue);
-
-  //   // Use the selectedValue directly instead of accessing it from state
-  //   const updatedQueryParams = { ...queryParams, account_id: selectedValue };
-  //   // console.log("query params", { account_id: selectedValue });
-  //   async function fetchData() {
-  //     try {
-  //       const response =
-  //         await apiService.getFilteredTransactions(updatedQueryParams);
-  //       const data = response.data;
-  //       const filteredTransactions = data.map((item) => ({
-  //         ...item,
-  //         key: item.id,
-  //       }));
-  //       setDataLoaded(filteredTransactions);
-  //       setQueryParams(updatedQueryParams); // Update the queryParams state after setting the data
-  //     } catch (error) {
-  //       console.error("Error filtering transactions:", error);
-  //     }
-  //   }
-  //   fetchData();
-  // };
+  // Run this effect whenever queryParams change
 
   const handleAccountChange = (selectedValue) => {
     // setSelectedPlateNumber("Select Plate Number"); // Reset selectedPlateNumber
@@ -208,10 +91,18 @@ export default function Transactions() {
         const response =
           await apiService.getFilteredTransactions(updatedQueryParams);
         const data = response.data;
+
         const filteredTransactions = data.map((item) => ({
           ...item,
           key: item.id,
         }));
+        // Initialize each transaction with checked: false
+        const transactionsChecker = filteredTransactions.map((transaction) => ({
+          ...transaction,
+          checked: false,
+        }));
+
+        // console.log("transactions", transactionsChecker);
         setDataLoaded(filteredTransactions);
         setLoadedFilterData(filteredTransactions);
         setQueryParams(updatedQueryParams); // Update the queryParams state after setting the data
@@ -241,89 +132,36 @@ export default function Transactions() {
       }
     }
     fetchData();
+    setShowTable(true);
   };
 
-  //extract unique properties
-  function extractUniqueProperties(filteredTransactions, propertyName) {
-    const propertyValuesSet = new Set();
-    filteredTransactions.slice().forEach((item) => {
-      propertyValuesSet.add(item[propertyName]);
-    });
+  // //extract unique properties
+  // function extractUniqueProperties(filteredTransactions, propertyName) {
+  //   const propertyValuesSet = new Set();
+  //   filteredTransactions.slice().forEach((item) => {
+  //     propertyValuesSet.add(item[propertyName]);
+  //   });
 
-    const uniqueProperties = Array.from(propertyValuesSet).map(
-      (value, index) => ({
-        id: index, // You can assign a unique ID if needed
-        value: value,
-        label: value,
-      }),
-    );
-    return uniqueProperties;
-  }
+  //   const uniqueProperties = Array.from(propertyValuesSet).map(
+  //     (value, index) => ({
+  //       id: index, // You can assign a unique ID if needed
+  //       value: value,
+  //       label: value,
+  //     }),
+  //   );
+  //   return uniqueProperties;
+  // }
 
-  function extractUniqueID(value, propertyName, referenceArray) {
-    const propertyId =
-      referenceArray.find((obj) => obj[propertyName] === value)?.id ?? null;
-    return propertyId;
-  }
-  //dynamic filter data
-  const processFilterData = (filterKey) => {
-    console.log("filter key", filterKey);
-    async function fetchData() {
-      try {
-        setQueryParams((prevQuery) => ({
-          ...prevQuery,
-          truck_id: selectedValue,
-        }));
-        const response =
-          await apiService.getFilteredTransactions(updatedQueryParams);
-        const data = response.data;
-        const filteredTransactions = data.map((item) => ({
-          ...item,
-          key: item.id,
-        }));
-        setDataLoaded(filteredTransactions);
-        setQueryParams(updatedQueryParams); // Update the queryParams state after setting the data
-
-        const plateNumbersSet = new Set();
-        filteredTransactions.slice().forEach((item) => {
-          plateNumbersSet.add(item.truck_plate);
-        });
-
-        const uniquePlateNumbers = Array.from(plateNumbersSet).map(
-          (plateNumber, index) => ({
-            id: index, // Assign unique ID if needed
-            value: plateNumber,
-            label: plateNumber,
-          }),
-        );
-
-        const truckIds = uniquePlateNumbers.map(({ value }) => ({
-          plateNumber: value,
-          truckId:
-            trucks.find((truck) => truck.truck_plate === value)?.id ?? null,
-        }));
-
-        setFilterData(truckIds);
-      } catch (error) {
-        console.error("Error filtering transactions:", error);
-      }
-    }
-    fetchData();
-  };
-
-  const handlePlateChange = (selectedValue) => {
-    setSelectedPlateNumber(selectedValue);
-    setQueryParams((prevQuery) => ({
-      ...prevQuery,
-      truck_id: selectedValue,
-    }));
-  };
+  // function extractUniqueID(value, propertyName, referenceArray) {
+  //   const propertyId =
+  //     referenceArray.find((obj) => obj[propertyName] === value)?.id ?? null;
+  //   return propertyId;
+  // }
 
   // Function to handle filter category change
   const handleFilterChange = (selectedValue) => {
     setQueryParams({ account_id: selectedAccount });
     setSelectedFilter(selectedValue);
-    console.log(selectedValue);
     // Based on the selected category, set the options
     switch (selectedValue) {
       case "Transaction Date":
@@ -380,8 +218,6 @@ export default function Transactions() {
 
   const handleSelectFilter = (selectedValue) => {
     setLevel2Query(selectedValue);
-    console.log("selected key in select filter", selectedKey);
-    console.log(`selected value ${selectedValue}`);
     switch (selectedKey) {
       case "transaction_date":
         setQueryParams((prevQuery) => ({
@@ -438,7 +274,7 @@ export default function Transactions() {
 
   return (
     <div>
-      <Link to={`edit`}>
+      <Link to={`add`}>
         <button
           className="mb-2 me-2 rounded-lg bg-gradient-to-r from-green-400 via-green-500 to-green-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-gradient-to-br focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800"
           type="submit"
@@ -488,7 +324,12 @@ export default function Transactions() {
               </>
             )}
           </div>
-          <TransactionTable transactions={dataLoaded} />
+          {showTable && (
+            <TransactionTable
+              transactions={dataLoaded}
+              setDataLoaded={setDataLoaded}
+            />
+          )}
         </>
       ) : (
         <p>No transactions yet</p>
@@ -497,86 +338,128 @@ export default function Transactions() {
   );
 }
 
-function TransactionTable({ transactions }) {
-  return (
-    <div className="">
-      <div className="flex justify-between px-5">
-        <h2 className="mb-4 text-2xl font-semibold">Transaction Data List</h2>{" "}
-      </div>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Transaction Number
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Customer Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Destination Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Plate Number
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Truck Type
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Shipment Number
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Trip Ticket Number
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {transactions.map((transaction) => (
-            <tr
-              key={transaction.transaction_number}
-              className="hover:bg-gray-100"
-            >
-              <td className="whitespace-nowrap px-6 py-4">
-                <Link
-                  to={`${transaction.transaction_number}`}
-                  className="text-blue-500 hover:underline"
-                >
-                  {transaction.transaction_number}
-                </Link>
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.transaction_date}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.customer_name}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.destination_name}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.truck_plate}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.truck_type_name}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.transaction_shipment_number}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.transaction_trip_ticket_number}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {transaction.transaction_status}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
+// function TransactionTable({ transactions, setDataLoaded }) {
+//   const handleCheckboxChange = (index) => {
+//     const newTransactions = [...transactions];
+//     newTransactions[index].checked = !newTransactions[index].checked;
+//     setDataLoaded(newTransactions);
+//     console.log("New transactions", newTransactions);
+//   };
+
+//   const handleSelectAllChange = () => {
+//     const allChecked = transactions.every((transaction) => transaction.checked);
+//     const newTransactions = transactions.map((transaction) => ({
+//       ...transaction,
+//       checked: !allChecked,
+//     }));
+//     setDataLoaded(newTransactions);
+//     console.log("New transactions", newTransactions);
+//   };
+//   return (
+//     <div className="">
+//       <div className="flex justify-between px-5">
+//         <h2 className="mb-4 text-2xl font-semibold">Transaction Data List</h2>{" "}
+//       </div>
+//       <table className="min-w-full divide-y divide-gray-200">
+//         <thead className="bg-gray-50">
+//           <tr>
+//             <th>
+//               <input
+//                 id="header-checkbox"
+//                 type="checkbox"
+//                 onChange={handleSelectAllChange}
+//                 className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+//               />
+//               <label
+//                 htmlFor="header-checkbox"
+//                 className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+//               >
+//                 Select All
+//               </label>
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Transaction Number
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Date
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Customer Name
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Destination Name
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Plate Number
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Truck Type
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Shipment Number
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Trip Ticket Number
+//             </th>
+//             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+//               Status
+//             </th>
+//           </tr>
+//         </thead>
+//         <tbody className="divide-y divide-gray-200 bg-white">
+//           {transactions.map((transaction, index) => (
+//             <tr
+//               key={transaction.transaction_number}
+//               className="hover:bg-gray-100"
+//             >
+//               <td className="content-center">
+//                 {/* Add flex and alignment classes */}
+//                 <div className="flex items-center">
+//                   {/* Add flex and alignment classes */}
+//                   <input
+//                     type="checkbox"
+//                     checked={transaction.checked || false}
+//                     onChange={() => handleCheckboxChange(index)}
+//                     className="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+//                   />
+//                 </div>
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 <Link
+//                   to={`${transaction.transaction_number}`}
+//                   className="text-blue-500 hover:underline"
+//                 >
+//                   {transaction.transaction_number}
+//                 </Link>
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.transaction_date}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.customer_name}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.destination_name}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.truck_plate}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.truck_type_name}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.transaction_shipment_number}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.transaction_trip_ticket_number}
+//               </td>
+//               <td className="whitespace-nowrap px-6 py-4">
+//                 {transaction.transaction_status}
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }

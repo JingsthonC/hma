@@ -94,7 +94,7 @@ function Root() {
           <div className="basis-full border-2 border-solid border-white md:basis-1/5 lg:basis-1/5">
             <Sidebar />
           </div>
-          <div className="overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <div className="border-2 border-solid border-white  bg-cover bg-center bg-no-repeat sm:basis-4/5 md:basis-4/5 lg:basis-4/5">
               <Outlet />
             </div>

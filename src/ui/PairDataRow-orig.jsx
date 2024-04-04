@@ -7,12 +7,8 @@ const PairDataRow = ({
   fieldName1,
   fieldName2,
   onFormattedDataChange,
-  initialData = [],
 }) => {
-  // const [items, setItems] = useState(
-  //   [{ [fieldName1]: "", [fieldName2]: "" }] || initialData,
-  // );
-  const [items, setItems] = useState(initialData);
+  const [items, setItems] = useState([{ [fieldName1]: "", [fieldName2]: "" }]);
   const [isRowEligible, setIsRowEligible] = useState(false);
   const lastInputRef1 = useRef(null);
   const lastInputRef2 = useRef(null);
@@ -64,6 +60,7 @@ const PairDataRow = ({
     // Add a new row when the "Add" button is clicked
     setItems([...items, { [fieldName1]: "", [fieldName2]: "" }]);
   };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full table-auto border-collapse">

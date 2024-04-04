@@ -19,6 +19,7 @@ import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import { AuthProvider } from "./AuthContext.jsx";
 import BillingSummaries, {
   loader as billingSummariesLoader,
+  action as addBillingSummaryAction,
 } from "./features/billing_summary/BillingSummaries.jsx";
 import BillingSummary, {
   loader as billingSummaryLoader,
@@ -27,6 +28,21 @@ import AddTransaction, {
   loader as addTransactionLoader,
   action as addTransactionAction,
 } from "./features/transactions/AddTransaction.jsx";
+import SupplierBillings, {
+  loader as supplierBillingsLoader,
+  action as addSupplierBillingAction,
+} from "./features/supplier_billing/SupplierBillings.jsx";
+import SupplierBilling, {
+  loader as supplierBillingLoader,
+} from "./features/supplier_billing/SupplierBilling.jsx";
+import EditTransaction, {
+  loader as editTransactionLoader,
+  action as editTransasctionAction,
+} from "./features/transactions/EditTransaction.jsx";
+import { action as destroyTransaction } from "./features/transactions/destroy.jsx";
+import EditBillingSummary, {
+  loader as editBillingSummaryLoader,
+} from "./features/billing_summary/EditBillingSummary.jsx";
 
 const router = createBrowserRouter([
   {
@@ -49,29 +65,54 @@ const router = createBrowserRouter([
         element: <Transactions />,
       },
       {
-        path: "transactions/:transactionNumber",
-        loader: transactionLoader,
-        element: <Transaction />,
-      },
-      {
-        path: "transactions/edit",
+        path: "transactions/add",
         action: addTransactionAction,
         loader: addTransactionLoader,
         element: <AddTransaction />,
       },
       {
+        path: "transactions/:transactionNumber",
+        loader: transactionLoader,
+        element: <Transaction />,
+      },
+      {
+        path: "transactions/:transactionNumber/edit",
+        loader: editTransactionLoader,
+        action: editTransasctionAction,
+        element: <EditTransaction />,
+      },
+      {
+        path: "transactions/:transactionNumber/edit/destroy",
+        action: destroyTransaction,
+        errorElement: <div>Oops! There was an error.</div>,
+      },
+      {
         path: "billing-summary",
+        action: addBillingSummaryAction,
         loader: billingSummariesLoader,
         element: <BillingSummaries />,
       },
+
       {
         path: "billing-summary/:billingSummaryId",
         loader: billingSummaryLoader,
         element: <BillingSummary />,
       },
       {
+        path: "billing-summary/:billingSummaryId/edit",
+        loader: editBillingSummaryLoader,
+        element: <EditBillingSummary />,
+      },
+      {
         path: "supplier-billing",
-        element: <div>supplier_billing</div>,
+        action: addSupplierBillingAction,
+        loader: supplierBillingsLoader,
+        element: <SupplierBillings />,
+      },
+      {
+        path: "supplier-billing/:supplierBillingId",
+        loader: supplierBillingLoader,
+        element: <SupplierBilling />,
       },
       {
         path: "accounts",

@@ -1,56 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FaTrash, FaPlus } from "react-icons/fa";
 
-const MutatingSingleColumn = ({ label, fieldName, onFormattedDataChange }) => {
-  const [items, setItems] = useState([{ [fieldName]: "" }]);
+const MutatingSingleColumn = ({
+  label,
+  fieldName,
+  onFormattedDataChange,
+  initialData = [],
+}) => {
+  const [items, setItems] = useState(initialData);
   const [isRowEligible, setIsRowEligible] = useState(false);
   const lastInputRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (lastInputRef.current) {
-  //     lastInputRef.current.focus();
-  //   }
-  //   updateFormattedData();
-  // }, [items]);
-
-  // const updateFormattedData = () => {
-  //   const formattedData = items.map((item) => ({
-  //     transaction_delivery_receipt_number: item[fieldName]
-  //       .split(",")
-  //       .map(Number),
-  //   }));
-  //   onFormattedDataChange && onFormattedDataChange(formattedData);
-  // };
+  const updateFormattedData = () => {
+    const formattedData = items.map((item) => {
+      let transaction_delivery_receipt_number = item[fieldName];
+      // Check if the value is a string before splitting
+      if (typeof transaction_delivery_receipt_number === "string") {
+        // Split the string by commas and convert each part to a number
+        transaction_delivery_receipt_number =
+          transaction_delivery_receipt_number.split(",").map(Number);
+      } else {
+        // If the value is not a string, create an array with a single element
+        transaction_delivery_receipt_number = [
+          transaction_delivery_receipt_number,
+        ];
+      }
+      return {
+        transaction_delivery_receipt_number,
+      };
+    });
+    onFormattedDataChange && onFormattedDataChange(formattedData);
+  };
 
   useEffect(() => {
     updateFormattedData();
   }, [items]);
-
-  const updateFormattedData = () => {
-    const formattedData = items.map((item) => ({
-      transaction_delivery_receipt_number: item[fieldName]
-        .split(",")
-        .map(Number),
-    }));
-    onFormattedDataChange && onFormattedDataChange(formattedData);
-  };
-
-  // const updateFormattedData = () => {
-  //   const formattedData = items.map((item) => ({
-  //     transaction_delivery_receipt_number: item[fieldName]
-  //       .split(",")
-  //       .map(Number),
-  //   }));
-  //   onFormattedDataChange && onFormattedDataChange(formattedData);
-  // };
-
-  // useEffect(() => {
-  //   if (lastInputRef.current) {
-  //     lastInputRef.current.focus();
-  //   }
-  //   updateFormattedData();
-  // }, [items, updateFormattedData]); // Include updateFormattedData in the dependency array
 
   const handleInputChange = (index, value) => {
     const updatedItems = [...items];

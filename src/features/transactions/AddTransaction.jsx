@@ -1,4 +1,4 @@
-import { useLoaderData, Form } from "react-router-dom";
+import { useLoaderData, Form, redirect, useNavigate } from "react-router-dom";
 import apiService from "../../services/apiService";
 import { useState } from "react";
 import SelectorComponent from "../../ui/SelectorComponent";
@@ -49,15 +49,31 @@ export async function loader({ params }) {
   }
 }
 
+// export async function action(formData) {
+//   console.log("form data at async function action", formData);
+//   try {
+//     const newTransaction = await apiService.addTransaction(formData);
+//     return { newTransaction };
+//   } catch (error) {
+//     console.error("Error adding transaction:", error);
+//   }
+// }
+
 export async function action(formData) {
+  console.log("form data at async function action", formData);
   try {
     const newTransaction = await apiService.addTransaction(formData);
     return { newTransaction };
   } catch (error) {
     console.error("Error adding transaction:", error);
+    // Log response data if available
+    if (error.response) {
+      console.log("Response data:", error.response.data);
+    }
   }
 }
 export default function AddTransaction() {
+  const navigate = useNavigate();
   const { accounts, trucks, truckTypes, customers, destinations } =
     useLoaderData();
 
@@ -74,7 +90,7 @@ export default function AddTransaction() {
     transaction_sales_invoice_number: [],
     transaction_sales_invoice_qty: [],
     transaction_delivery_receipt_number: [],
-    transaction_number_of_cases: "",
+    transaction_number_of_cases: 0,
     transaction_deduction_amount: [],
     transaction_deduction_remarks: [],
     transaction_status: "not_yet_processed",
@@ -97,23 +113,25 @@ export default function AddTransaction() {
   const [selectedDestination, setSelectedDestination] =
     useState("Select Destination");
 
+  const fieldName = "transaction_delivery_receipt_number";
+  const fieldName1 = "transaction_sales_invoice_number";
+  const fieldName2 = "transaction_sales_invoice_qty";
+  const fieldName3 = "transaction_deduction_amount";
+  const fieldName4 = "transaction_deduction_remarks";
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     alert(JSON.stringify(formData));
     try {
       const result = await action(formData);
       console.log("New Transaction:", result.newTransaction);
+
+      navigate("/transactions");
       // Handle success
     } catch (error) {
       // Handle error
     }
   };
-
-  // const handleAccountChange = (event) => {
-  //   const selectedValue = event.target.value;
-  //   setSelectedAccount(selectedValue);
-  //   setFormData((prevData) => ({ ...prevData, account_name: selectedValue }));
-  // };
 
   const handleAccountChange = (selectedValue) => {
     setSelectedAccount(selectedValue);
@@ -122,12 +140,6 @@ export default function AddTransaction() {
       account_name: selectedValue,
     }));
   };
-
-  // const handlePlateChange = (event) => {
-  //   const selectedValue = event.target.value;
-  //   setSelectedPlateNumber(selectedValue);
-  //   setFormData((prevData) => ({ ...prevData, truck_plate: selectedValue }));
-  // };
 
   const handlePlateChange = (selectedValue) => {
     setSelectedPlateNumber(selectedValue);
@@ -256,29 +268,6 @@ export default function AddTransaction() {
       <div className="grid h-auto w-full grid-cols-3 gap-4">
         <div className="bg-gray col-span-3 flex h-auto flex-col justify-between gap-2 border-2 border-solid p-2 md:flex-row">
           <div className="w-full md:w-1/3">
-            {/* <form className="">
-              <label
-                htmlFor="accounts"
-                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Select an account
-              </label>
-              <select
-                id="accounts"
-                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                value={selectedAccount}
-                onChange={handleAccountChange}
-              >
-                <option value="Choose a account" disabled>
-                  Choose a account
-                </option>
-                {accounts.map((account) => (
-                  <option key={account.id} value={account.account_name}>
-                    {account.account_name}
-                  </option>
-                ))}
-              </select>
-            </form> */}
             <SelectorComponent
               label="Choose an account"
               options={accounts.map((account) => ({
@@ -305,29 +294,6 @@ export default function AddTransaction() {
             />
           </div>
           <div className="h-auto border-2 border-solid p-2 sm:w-full md:w-1/3">
-            {/* <form className="">
-              <label
-                htmlFor="truck_plates"
-                className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Select Plate Number
-              </label>
-              <select
-                id="truck_plates"
-                className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                value={selectedPlateNumber}
-                onChange={handlePlateChange}
-              >
-                <option value="Select Plate Number" disabled>
-                  Select Plate Number
-                </option>
-                {trucks.map((truck) => (
-                  <option key={truck.id} value={truck.truck_plate}>
-                    {truck.truck_plate}
-                  </option>
-                ))}
-              </select>
-            </form> */}
             <SelectorComponent
               label="Select Plate Number"
               options={trucks.map((truck) => ({
@@ -408,12 +374,21 @@ export default function AddTransaction() {
               />
             </div>
             <div className="col-span-3 md:col-span-2">
+              {/* <PairDataRow
+                label1="Sales Invoice Number"
+                label2=" Sales Invoice Quantity"
+                fieldName1="transaction_sales_invoice_number"
+                fieldName2="transaction_sales_invoice_qty"
+                onFormattedDataChange={handleFormattedDataChange}
+                initialData={[{ [fieldName1]: "", [fieldName2]: "" }]}
+              /> */}
               <PairDataRow
                 label1="Sales Invoice Number"
                 label2=" Sales Invoice Quantity"
                 fieldName1="transaction_sales_invoice_number"
                 fieldName2="transaction_sales_invoice_qty"
                 onFormattedDataChange={handleFormattedDataChange}
+                initialData={[{ [fieldName1]: "", [fieldName2]: "" }]}
               />
             </div>
             <div className="col-span-3 md:col-span-1">
@@ -421,6 +396,7 @@ export default function AddTransaction() {
                 label="Delivery Receipt Number"
                 fieldName="transaction_delivery_receipt_number"
                 onFormattedDataChange={handleSingleFormattedDataChange}
+                initialData={[{ [fieldName]: "" }]}
               />
             </div>
             <div className="col-span-3 h-auto w-full">
@@ -439,9 +415,10 @@ export default function AddTransaction() {
           <PairDataRowB
             label1="Deduction Amount"
             label2="Deduction Remarks"
-            fieldName1="transaction_deduction_amount"
-            fieldName2="transaction_deduction_remarks"
+            fieldName3="transaction_deduction_amount"
+            fieldName4="transaction_deduction_remarks"
             onFormattedDataChange={handleFormattedDataChangeB}
+            initialData={[{ [fieldName3]: "", [fieldName4]: "" }]}
           />
         </div>
 

@@ -65,6 +65,11 @@ const apiService = {
   // deleteTransaction: (id) => axios.delete(`${BASE_URL}/api/transactions/${id}`),
 
   getAllTransactions: () => axios.get(`${BASE_URL}/api/transactions`),
+  getTransactionsByNumbers: (numbers) =>
+    axios.post(`${BASE_URL}/api/transactions/bynumbers`, {
+      transactionNumbers: numbers,
+    }),
+
   getSortedTransactions: () => axios.get(`${BASE_URL}/api/transactions/sort`),
 
   getFilteredTransactions: (queryParams) =>
@@ -76,7 +81,18 @@ const apiService = {
   deleteTransaction: (id) => axios.delete(`${BASE_URL}/api/transactions/${id}`),
 
   // Billing Summaries
+
   getAllBillingSummaries: () => axios.get(`${BASE_URL}/api/billing_summary`),
+  getBillingSummaryDashboardData: (queryParams) =>
+    axios.get(`${BASE_URL}/api/billing_summary/dashboard`, {
+      params: queryParams,
+    }),
+  getSortedBillingSummary: () =>
+    axios.get(`${BASE_URL}/api/billing_summary/sort`),
+  getFilteredBillingSummary: (queryParams) =>
+    axios.get(`${BASE_URL}/api/billing_summary/filter`, {
+      params: queryParams,
+    }),
   getBillingSummaryById: (id) =>
     axios.get(`${BASE_URL}/api/billing_summary/${id}`),
   addBillingSummary: (data) =>
@@ -87,11 +103,19 @@ const apiService = {
     axios.delete(`${BASE_URL}/api/billing_summary/${id}`),
 
   // Supplier Billings
-  getAllSupplierBillings: () => axios.get(`${BASE_URL}/api/supplier_billings`),
+  getAllSupplierBillings: () => axios.get(`${BASE_URL}/api/supplier_billing`),
+  getSupplierBillingDashboardData: () =>
+    axios.get(`${BASE_URL}/api/supplier_billing/dashboard`),
+  getSortedSupplierBilling: () =>
+    axios.get(`${BASE_URL}/api/supplier_billing/sort`),
+  getFilteredSupplierBilling: (queryParams) =>
+    axios.get(`${BASE_URL}/api/supplier_billing/filter`, {
+      params: queryParams,
+    }),
   getSupplierBillingById: (id) =>
     axios.get(`${BASE_URL}/api/supplier_billing/${id}`),
   addSupplierBilling: (data) =>
-    axios.post(`${BASE_URL}/api/create_supplier_billing`, data),
+    axios.post(`${BASE_URL}/api/supplier_billing`, data),
   updateSupplierBilling: (id, data) =>
     axios.put(`${BASE_URL}/api/supplier_billing/${id}`, data),
   deleteSupplierBilling: (id) =>
