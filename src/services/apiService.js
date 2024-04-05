@@ -16,11 +16,21 @@ const apiService = {
   deleteStaff: (id) => axios.delete(`${BASE_URL}/api/staff/${id}`),
 
   // Accounts
+  // getAllAccounts: () => axios.get(`${BASE_URL}/api/accounts`),
+  // getAccountById: (id) => axios.get(`${BASE_URL}/api/accounts/${id}`),
+  // updateAccount: (id, data) =>
+  //   axios.put(`${BASE_URL}/api/accounts/${id}`, data),
+  // deleteAccount: (id) => axios.delete(`${BASE_URL}/api/accounts/${id}`),
   getAllAccounts: () => axios.get(`${BASE_URL}/api/accounts`),
   getAccountById: (id) => axios.get(`${BASE_URL}/api/accounts/${id}`),
   updateAccount: (id, data) =>
     axios.put(`${BASE_URL}/api/accounts/${id}`, data),
   deleteAccount: (id) => axios.delete(`${BASE_URL}/api/accounts/${id}`),
+
+  createAccount: (data) => axios.post(`${BASE_URL}/api/accounts`, data),
+  sortAccounts: () => axios.get(`${BASE_URL}/api/accounts/sort`),
+  filterAccounts: (params) =>
+    axios.get(`${BASE_URL}/api/accounts/filter`, { params }),
 
   // Trucks
   getAllTrucks: () => axios.get(`${BASE_URL}/api/trucks`),

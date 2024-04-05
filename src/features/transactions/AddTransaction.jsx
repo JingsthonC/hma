@@ -99,7 +99,7 @@ export default function AddTransaction() {
     billing_summary_number: "",
     billing_summary_check_number: "",
     transaction_remarks: "",
-    email: storedUser.email && storedUser.email,
+    // email: storedUser.email && storedUser.email,
   };
 
   const [formData, setFormData] = useState(initialData);

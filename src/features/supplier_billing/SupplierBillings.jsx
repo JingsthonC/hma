@@ -12,7 +12,7 @@ const initialData = {
   supplier_billing_included_transactions: [],
   supplier_billing_check_number: "",
   supplier_billing_status: "not_completed",
-  user_email: storedUser.email && storedUser.email,
+  // user_email: "" || (storedUser.email && storedUser.email),
 };
 
 export async function loader() {

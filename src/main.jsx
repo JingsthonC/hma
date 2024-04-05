@@ -43,6 +43,19 @@ import { action as destroyTransaction } from "./features/transactions/destroy.js
 import EditBillingSummary, {
   loader as editBillingSummaryLoader,
 } from "./features/billing_summary/EditBillingSummary.jsx";
+import Accounts, {
+  loader as accountsLoader,
+} from "./features/accounts/Accounts.jsx";
+
+import EditAccount, {
+  loader as accountLoader,
+  action as editAccountAction,
+} from "./features/accounts/EditAccount.jsx";
+
+import { action as destroyAccountAction } from "./features/accounts/DestroyAccount.jsx";
+import AddAccount, {
+  action as addAccountAction,
+} from "./features/accounts/AddAccount.jsx";
 
 const router = createBrowserRouter([
   {
@@ -116,7 +129,24 @@ const router = createBrowserRouter([
       },
       {
         path: "accounts",
-        element: <div>accounts</div>,
+        loader: accountsLoader,
+        element: <Accounts />,
+      },
+      {
+        path: "accounts/add",
+        action: addAccountAction,
+        element: <AddAccount />,
+      },
+      {
+        path: "accounts/:accountId",
+        loader: accountLoader,
+        action: editAccountAction,
+        element: <EditAccount />,
+      },
+      {
+        path: "accounts/:accountId/destroy",
+        action: destroyAccountAction,
+        errorElement: <div>Oops! There was an error.</div>,
       },
       {
         path: "subcons",
