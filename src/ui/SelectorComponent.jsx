@@ -16,30 +16,30 @@ const SelectorComponent = ({
 
   return (
     <div className="">
-      <form className="">
-        <label
-          htmlFor="selectorOptions"
-          className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-        >
+      {/* <form className=""> */}
+      <label
+        htmlFor="selectorOptions"
+        className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+      >
+        {label}
+      </label>
+      <select
+        id="selectorOptions"
+        className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        value={selectedValue}
+        onChange={handleOptionChange}
+        disabled={isDisabled}
+      >
+        <option key={label} value={label} disabled>
           {label}
-        </label>
-        <select
-          id="selectorOptions"
-          className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          value={selectedValue}
-          onChange={handleOptionChange}
-          disabled={isDisabled}
-        >
-          <option value={label} disabled>
-            {label}
+        </option>
+        {options.map((option) => (
+          <option key={option.id || option.index} value={option.value}>
+            {option.label}
           </option>
-          {options.map((option) => (
-            <option key={option.id || option.index} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </form>
+        ))}
+      </select>
+      {/* </form> */}
     </div>
   );
 };

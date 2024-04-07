@@ -61,10 +61,11 @@ const apiService = {
 
   // Categories
   getAllCategories: () => axios.get(`${BASE_URL}/api/categories`),
-  getCategoryById: (id) => axios.get(`${BASE_URL}/api/category/${id}`),
+  getCategoryById: (id) => axios.get(`${BASE_URL}/api/categories/${id}`),
+  createCategory: (data) => axios.post(`${BASE_URL}/api/categories`, data),
   updateCategory: (id, data) =>
-    axios.put(`${BASE_URL}/api/category/${id}`, data),
-  deleteCategory: (id) => axios.delete(`${BASE_URL}/api/category/${id}`),
+    axios.put(`${BASE_URL}/api/categories/${id}`, data),
+  deleteCategory: (id) => axios.delete(`${BASE_URL}/api/categories/${id}`),
 
   // Transactions
   // getAllTransactions: () => axios.get(`${BASE_URL}/api/transactions`),

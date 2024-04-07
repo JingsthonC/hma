@@ -18,6 +18,15 @@ const Sidebar = () => {
         <Link to={`accounts`} className="block py-2 hover:bg-gray-700">
           Accounts
         </Link>
+        <Link to={`categories`} className="block py-2 hover:bg-gray-700">
+          Categories
+        </Link>
+        <Link to={`destinations`} className="block py-2 hover:bg-gray-700">
+          Destinations
+        </Link>
+        <Link to={`customers`} className="block py-2 hover:bg-gray-700">
+          Customer
+        </Link>
         <Link to={`subcons`} className="block py-2 hover:bg-gray-700">
           Subcon
         </Link>
@@ -27,15 +36,7 @@ const Sidebar = () => {
         <Link to={`truck-types`} className="block py-2 hover:bg-gray-700">
           Truck Types
         </Link>
-        <Link to={`customers`} className="block py-2 hover:bg-gray-700">
-          Customer
-        </Link>
-        <Link to={`categories`} className="block py-2 hover:bg-gray-700">
-          Categories
-        </Link>
-        <Link to={`destinations`} className="block py-2 hover:bg-gray-700">
-          Destinations
-        </Link>
+
         <Link to={`accounts`} className="block py-2 hover:bg-gray-700">
           Accounts
         </Link>

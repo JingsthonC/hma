@@ -288,8 +288,8 @@ export default function Transactions() {
             <SelectorComponent
               label="Choose an account"
               options={accounts.map((account) => ({
-                id: account.id,
-                value: account.id,
+                id: account.account_id,
+                value: account.account_id,
                 label: account.account_name,
               }))}
               selectedValue={selectedAccount}

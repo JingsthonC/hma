@@ -1,5 +1,5 @@
 import apiService from "../../services/apiService";
-import { Form, Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 
 export async function loader() {
   try {
@@ -29,7 +29,7 @@ export default function Accounts() {
           </button>
         </Link>
       </div>
-      <div className="flex overflow-x-auto py-4">
+      <div className="flex h-full flex-wrap gap-5 overflow-y-auto py-4">
         {accounts.map((account) => (
           <Link key={account.account_id} to={`${account.account_id}`}>
             <AccountCard account={account} />

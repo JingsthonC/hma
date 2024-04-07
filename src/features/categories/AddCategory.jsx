@@ -1,14 +1,13 @@
-import { Form, redirect, useNavigate } from "react-router-dom";
+import { Form, redirect, useNavigate, useLoaderData } from "react-router-dom";
 import apiService from "../../services/apiService";
 import { useReducer } from "react";
+import SelectorComponent from "../../ui/SelectorComponent";
 
 const initialState = {
-  //   account_id: "",
-  account_name: "",
-  account_phone: "",
-  account_email: "",
-  account_fuel_price: "",
-  account_status: "active", // Set default status to "active"
+  category_name: "",
+  category_base_rate: "",
+  category_status: "active",
+  account_id: "",
 };
 
 function reducer(state, action) {
@@ -25,28 +24,40 @@ function reducer(state, action) {
   }
 }
 
-export async function action({ request }) {
+export async function loader() {
   try {
-    const formData = await request.formData();
-    const newAccount = Object.fromEntries(formData);
-    const response = await apiService.createAccount(newAccount); // Adjust this line based on your API service method for creating an account
-    if (response.status === 200) {
-      alert("Account Creation successful");
-    } else {
-      alert("Account Creation");
-    }
+    const [accountsRes] = await Promise.all([apiService.getAllAccounts()]);
 
-    //  else {
-    //   alert("Account Creation cancelled");
-    // }
-    return redirect(`/accounts`);
+    return {
+      accounts: accountsRes.data,
+    };
   } catch (error) {
-    console.error("Error creating account:", error);
-    return { message: "Error creating account. Please try again later." };
+    console.error("Error fetching data:", error);
+    return { error: "Failed to load data" };
   }
 }
 
-export default function AddAccount() {
+// eslint-disable-next-line react-refresh/only-export-components
+export async function action({ request }) {
+  try {
+    const formData = await request.formData();
+    const newCategory = Object.fromEntries(formData);
+    console.log("new Category data", newCategory);
+    const response = await apiService.createCategory(newCategory); // Adjust this line based on your API service method for creating an account
+    if (response.status === 200) {
+      alert("Category Creation successful");
+    } else {
+      alert("Category Creation");
+    }
+    return redirect(`/categories`);
+  } catch (error) {
+    console.error("Error creating category:", error);
+    return { message: "Error creating category. Please try again later." };
+  }
+}
+
+export default function AddCategory() {
+  const { accounts } = useLoaderData();
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -55,6 +66,15 @@ export default function AddAccount() {
       type: "updateField",
       field: e.target.name,
       value: e.target.value,
+    });
+  };
+
+  const handleAccountChange = (selectedValue) => {
+    console.log("handle account change fired with ", selectedValue);
+    dispatch({
+      type: "updateField",
+      field: "account_id",
+      value: selectedValue,
     });
   };
 
@@ -67,44 +87,38 @@ export default function AddAccount() {
       className="container w-full gap-5 border-2 border-solid border-green-700 p-5 md:max-w-max"
     >
       <div className="mb-5 flex flex-col gap-5">
-        {/* LabeledInput for Account Name */}
+        <SelectorComponent
+          label="Choose an account"
+          options={accounts.map((account) => ({
+            id: account.account_id,
+            value: account.account_id,
+            label: account.account_name,
+          }))}
+          selectedValue={state.account_name}
+          onChange={handleAccountChange}
+        />
+        <input name="account_id" readOnly hidden value={state.account_id} />
         <LabeledInput
-          label="Account Name"
-          id="accountName"
-          name="account_name"
-          value={state.account_name}
+          label="Category Name"
+          id="categoryName"
+          name="category_name"
+          value={state.category_name}
           onChange={handleChange}
         />
-        {/* LabeledInput for Email */}
+
         <LabeledInput
-          label="Email"
-          id="accountEmail"
-          name="account_email"
-          value={state.account_email}
-          onChange={handleChange}
-        />
-        {/* LabeledInput for Contact Number */}
-        <LabeledInput
-          label="Contact Number"
-          id="accountPhone"
-          name="account_phone"
-          value={state.account_phone}
-          onChange={handleChange}
-        />
-        {/* LabeledInput for Fuel Price  */}
-        <LabeledInput
-          label="Fuel Price"
-          id="accountFuelPrice"
-          name="account_fuel_price"
-          value={state.account_fuel_price}
+          label="Base Rate"
+          id="categoryBaseRate"
+          name="category_base_rate"
+          value={state.category_base_rate}
           onChange={handleChange}
         />
         {/* Status Selector */}
         <StatusSelector
           label="Status"
-          id="accountStatus"
-          name="account_status"
-          value={state.account_status}
+          id="categoryStatus"
+          name="category_status"
+          value={state.category_status}
           onChange={handleChange}
         />
       </div>

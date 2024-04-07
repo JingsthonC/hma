@@ -24,38 +24,6 @@ export async function loader() {
   }
 }
 
-// export async function loader() {
-//   try {
-//     const [
-//       // transactionsRes,
-//       accountsRes,
-//       // trucksRes,
-//       // customerRes,
-//       // destinationsRes,
-//       // truckTypesRes,
-//     ] = await Promise.all([
-//       // apiService.getAllTransactions(),
-//       apiService.getAllAccounts(),
-//       // apiService.getAllTrucks(),
-//       // apiService.getAllCustomers(),
-//       // apiService.getAllDestinations(),
-//       // apiService.getAllTruckTypes(),
-//     ]);
-
-//     return {
-//       // transactions: transactionsRes.data,
-//       accounts: accountsRes.data,
-//       // trucks: trucksRes.data,
-//       // customers: customerRes.data,
-//       // destinations: destinationsRes.data,
-//       // truckTypes: truckTypesRes.data,
-//     };
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     return { error: "Failed to load data" };
-//   }
-// }
-
 export async function action(formData) {
   try {
     const newBillingSummary = await apiService.addBillingSummary(formData);
@@ -477,8 +445,8 @@ export default function BillingSummaries() {
         <SelectorComponent
           label="Choose an account"
           options={accounts.map((account) => ({
-            id: account.id,
-            value: account.id,
+            id: account.account_id,
+            value: account.account_id,
             label: account.account_name,
           }))}
           selectedValue={selectedAccount}

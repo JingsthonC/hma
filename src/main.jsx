@@ -56,6 +56,18 @@ import { action as destroyAccountAction } from "./features/accounts/DestroyAccou
 import AddAccount, {
   action as addAccountAction,
 } from "./features/accounts/AddAccount.jsx";
+import Categories, {
+  loader as categoriesLoader,
+} from "./features/categories/Categories.jsx";
+import EditCategory, {
+  loader as categoryLoader,
+  action as editCategoryAction,
+} from "./features/categories/EditCategory.jsx";
+import { action as destroyCategoryAction } from "./features/categories/DestroyCategory.jsx";
+import AddCategory, {
+  loader as addCategoryLoader,
+  action as addCategoryAction,
+} from "./features/categories/AddCategory.jsx";
 
 const router = createBrowserRouter([
   {
@@ -149,6 +161,28 @@ const router = createBrowserRouter([
         errorElement: <div>Oops! There was an error.</div>,
       },
       {
+        path: "categories",
+        loader: categoriesLoader,
+        element: <Categories />,
+      },
+      {
+        path: "categories/add",
+        loader: addCategoryLoader,
+        action: addCategoryAction,
+        element: <AddCategory />,
+      },
+      {
+        path: "categories/:categoryId",
+        loader: categoryLoader,
+        action: editCategoryAction,
+        element: <EditCategory />,
+      },
+      {
+        path: "categories/:categoryId/destroy",
+        action: destroyCategoryAction,
+        errorElement: <div>Oops! There was an error.</div>,
+      },
+      {
         path: "subcons",
         element: <div>subcons</div>,
       },
@@ -164,10 +198,7 @@ const router = createBrowserRouter([
         path: "customers",
         element: <div>customer</div>,
       },
-      {
-        path: "categories",
-        element: <div>categories</div>,
-      },
+
       {
         path: "destinations",
         element: <div>destinations</div>,
