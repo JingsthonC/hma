@@ -112,6 +112,17 @@ import AddTruck, {
   loader as addTruckSubConLoader,
   action as addTruckAction,
 } from "./features/trucks/AddTruck.jsx";
+import TruckTypes, {
+  loader as truckTypesLoader,
+} from "./features/truck_types/TruckTypes.jsx";
+import EditTruckType, {
+  action as editTruckTypeAction,
+  loader as truckTypeLoader,
+} from "./features/truck_types/EditTruckType.jsx";
+import AddTruckType, {
+  action as addTruckTypeAction,
+} from "./features/truck_types/AddTruckType.jsx";
+import { action as destroyTruckTypeAction } from "./features/truck_types/destoryTruckType.js";
 
 const router = createBrowserRouter([
   {
@@ -316,7 +327,24 @@ const router = createBrowserRouter([
       },
       {
         path: "truck-types",
-        element: <div>truck-types</div>,
+        loader: truckTypesLoader,
+        element: <TruckTypes />,
+      },
+      {
+        path: "truck-types/add",
+        action: addTruckTypeAction,
+        element: <AddTruckType />,
+      },
+      {
+        path: "truck-types/:truckTypeId",
+        loader: truckTypeLoader,
+        action: editTruckTypeAction,
+        element: <EditTruckType />,
+      },
+      {
+        path: "truck-types/:truckTypeId/destroy",
+        action: destroyTruckTypeAction,
+        errorElement: <div>Oops! There was an error.</div>,
       },
       {
         path: "accounts",

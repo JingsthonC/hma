@@ -36,10 +36,6 @@ const Sidebar = () => {
         <Link to={`truck-types`} className="block py-2 hover:bg-gray-700">
           Truck Types
         </Link>
-
-        <Link to={`accounts`} className="block py-2 hover:bg-gray-700">
-          Accounts
-        </Link>
         <Link to={`staffs`} className="block py-2 hover:bg-gray-700">
           Staffs
         </Link>

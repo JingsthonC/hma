@@ -41,6 +41,7 @@ const apiService = {
 
   // Truck Types
   getAllTruckTypes: () => axios.get(`${BASE_URL}/api/truck_types`),
+  createTruckType: (data) => axios.post(`${BASE_URL}/api/truck_types`, data),
   getTruckTypeById: (id) => axios.get(`${BASE_URL}/api/truck_types/${id}`),
   updateTruckType: (id, data) =>
     axios.put(`${BASE_URL}/api/truck_types/${id}`, data),
