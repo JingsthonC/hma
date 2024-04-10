@@ -4,64 +4,61 @@ import { useReducer } from "react";
 import SelectorComponent from "../../ui/SelectorComponent";
 
 const initialState = {
-  category_name: "",
-  category_base_rate: "",
-  category_status: "active",
-  account_id: "",
+  truck_plate: "",
+  sub_con_id: "Select Sub Con",
+  sub_con_name: "",
+  truck_rate: "",
+  truck_status: "active",
 };
 
 function reducer(state, action) {
   switch (action.type) {
     case "updateField":
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
+      return { ...state, [action.field]: action.value };
     case "reset":
       return initialState;
     default:
-      return state;
+      state;
   }
 }
 
 export async function loader() {
   try {
-    const [accountsRes] = await Promise.all([apiService.getAllAccounts()]);
+    const [subConsRes] = await Promise.all([apiService.getAllSubCons()]);
 
     return {
-      accounts: accountsRes.data,
+      subCons: subConsRes?.data || [],
     };
   } catch (error) {
     console.error("Error fetching data:", error);
     return { error: "Failed to load data" };
   }
 }
-
-// eslint-disable-next-line react-refresh/only-export-components
 export async function action({ request }) {
   try {
     const formData = await request.formData();
-    const newCategory = Object.fromEntries(formData);
-    console.log("new Category data", newCategory);
-    const response = await apiService.createCategory(newCategory); // Adjust this line based on your API service method for creating an account
+    const newTruck = Object.fromEntries(formData);
+    console.log("new data", newTruck);
+    const response = await apiService.createTruck(newTruck); // Adjust this line based on your API service method for creating an account
     if (response.status === 200) {
-      alert("Category Creation successful");
+      alert("Trucks Creation successful");
     } else {
-      alert("Category Creation");
+      alert("Trucks Creation");
     }
-    return redirect(`/categories`);
+    return redirect(`/trucks`);
   } catch (error) {
-    console.error("Error creating category:", error);
-    return { message: "Error creating category. Please try again later." };
+    console.error("Error creating Trucks:", error);
+    return { message: "Error creating Trucks. Please try again later." };
   }
 }
 
-export default function AddCategory() {
-  const { accounts } = useLoaderData();
-  const navigate = useNavigate();
+export default function AddTruck() {
+  const { subCons } = useLoaderData();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
+    // console.log("e.target.value", e.target.value);
     dispatch({
       type: "updateField",
       field: e.target.name,
@@ -69,55 +66,52 @@ export default function AddCategory() {
     });
   };
 
-  const handleAccountChange = (selectedValue) => {
+  const handleSubConChange = (selectedValue) => {
     dispatch({
       type: "updateField",
-      field: "account_id",
+      field: "sub_con_id",
       value: selectedValue,
     });
   };
-
   console.log("state", state);
-
   return (
     <Form
       method="post"
-      //   onSubmit={handleSubmit}
       className="container w-full gap-5 border-2 border-solid border-green-700 p-5 md:max-w-max"
     >
       <div className="mb-5 flex flex-col gap-5">
         <SelectorComponent
-          label="Choose an account"
-          options={accounts.map((account) => ({
-            id: account.account_id,
-            value: account.account_id,
-            label: account.account_name,
+          label="Select Sub Con"
+          options={subCons.map((sub_con) => ({
+            id: sub_con.sub_con_id,
+            value: sub_con.sub_con_id,
+            label: sub_con.sub_con_name,
           }))}
-          selectedValue={state.account_name}
-          onChange={handleAccountChange}
+          selectedValue={state.sub_con_id}
+          onChange={handleSubConChange}
         />
-        <input name="account_id" readOnly hidden value={state.account_id} />
+        <input name="sub_con_id" readOnly hidden value={state.sub_con_id} />
         <LabeledInput
-          label="Category Name"
-          id="categoryName"
-          name="category_name"
-          value={state.category_name}
+          label="Truck Plate"
+          id="truckPlate"
+          name="truck_plate"
+          value={state.truck_plate}
           onChange={handleChange}
         />
 
         <LabeledInput
-          label="Base Rate"
-          id="categoryBaseRate"
-          name="category_base_rate"
-          value={state.category_base_rate}
+          label="Rate"
+          id="truckRate"
+          name="truck_rate"
+          value={state.truck_rate}
           onChange={handleChange}
         />
         {/* Status Selector */}
         <StatusSelector
           label="Status"
-          id="categoryStatus"
-          name="category_status"
-          value={state.category_status}
+          id="truckStatus"
+          name="truck_status"
+          value={state.truck_status}
           onChange={handleChange}
         />
       </div>
@@ -159,23 +153,18 @@ function LabeledInput({ label, id, name, value, onChange }) {
   );
 }
 
-function StatusSelector({ label, id, name, value, onChange }) {
+function StatusSelector({ name, id, value, onChange }) {
   return (
-    <div className="flex flex-col gap-5 md:flex-row">
-      <label htmlFor={id} className="w-32 self-center">
-        {label}
-      </label>
-      <select
-        id={id}
-        name={name}
-        className="block w-auto rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-        value={value}
-        onChange={onChange}
-        style={{ backgroundColor: value === "active" ? "green" : "red" }}
-      >
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
-      </select>
-    </div>
+    <select
+      id={id}
+      name={name}
+      className="block w-auto rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+      value={value}
+      onChange={onChange}
+      style={{ backgroundColor: value === "active" ? "green" : "red" }} // Set background color based on status value
+    >
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
   );
 }

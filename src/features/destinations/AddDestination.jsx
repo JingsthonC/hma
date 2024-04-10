@@ -1,13 +1,15 @@
-import { Form, redirect, useNavigate, useLoaderData } from "react-router-dom";
+import { useReducer, useState } from "react";
+import { Form, redirect, useLoaderData } from "react-router-dom";
 import apiService from "../../services/apiService";
-import { useReducer } from "react";
 import SelectorComponent from "../../ui/SelectorComponent";
 
 const initialState = {
-  category_name: "",
-  category_base_rate: "",
-  category_status: "active",
-  account_id: "",
+  category_id: "Choose a category",
+  destination_distance: "",
+  destination_id: "",
+  destination_name: "",
+  destination_status: "active",
+  account_id: "Choose an account",
 };
 
 function reducer(state, action) {
@@ -26,10 +28,10 @@ function reducer(state, action) {
 
 export async function loader() {
   try {
-    const [accountsRes] = await Promise.all([apiService.getAllAccounts()]);
+    const [accountRes] = await Promise.all([apiService.getAllAccounts()]);
 
     return {
-      accounts: accountsRes.data,
+      accounts: accountRes.data,
     };
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -41,25 +43,24 @@ export async function loader() {
 export async function action({ request }) {
   try {
     const formData = await request.formData();
-    const newCategory = Object.fromEntries(formData);
-    console.log("new Category data", newCategory);
-    const response = await apiService.createCategory(newCategory); // Adjust this line based on your API service method for creating an account
+    const newDestination = Object.fromEntries(formData);
+    console.log("new Category data", newDestination);
+    const response = await apiService.createDestination(newDestination); // Adjust this line based on your API service method for creating an account
     if (response.status === 200) {
-      alert("Category Creation successful");
+      alert("Destination Creation successful");
     } else {
-      alert("Category Creation");
+      alert("Destination Creation");
     }
-    return redirect(`/categories`);
+    return redirect(`/destinations`);
   } catch (error) {
-    console.error("Error creating category:", error);
-    return { message: "Error creating category. Please try again later." };
+    console.error("Error creating destination:", error);
+    return { message: "Error creating destination. Please try again later." };
   }
 }
-
-export default function AddCategory() {
+export default function AddDestination() {
   const { accounts } = useLoaderData();
-  const navigate = useNavigate();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const handleChange = (e) => {
     dispatch({
@@ -69,20 +70,45 @@ export default function AddCategory() {
     });
   };
 
-  const handleAccountChange = (selectedValue) => {
+  const handleAccountChange = async (selectedValue) => {
+    try {
+      dispatch({
+        type: "updateField",
+        field: "account_id",
+        value: selectedValue,
+      });
+
+      // Fetch filtered categories based on the selected account ID
+      const res = await apiService.getFilteredCategories({
+        account_id: selectedValue,
+      });
+      const data = res.data;
+      const chosenCategories = data.map((item) => ({
+        ...item,
+        key: item.id,
+      }));
+
+      // Set the filtered categories in component state
+      setFilteredCategories(chosenCategories);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return { error: "Failed to load data" };
+    }
+  };
+
+  const handleCategoryChange = async (selectedValue) => {
     dispatch({
       type: "updateField",
-      field: "account_id",
+      field: "category_id",
       value: selectedValue,
     });
   };
 
   console.log("state", state);
-
+  // console.log("selectedAccount", selectedAccount);
   return (
     <Form
       method="post"
-      //   onSubmit={handleSubmit}
       className="container w-full gap-5 border-2 border-solid border-green-700 p-5 md:max-w-max"
     >
       <div className="mb-5 flex flex-col gap-5">
@@ -93,31 +119,43 @@ export default function AddCategory() {
             value: account.account_id,
             label: account.account_name,
           }))}
-          selectedValue={state.account_name}
+          selectedValue={state.account_id}
           onChange={handleAccountChange}
         />
-        <input name="account_id" readOnly hidden value={state.account_id} />
+        {state.account_id !== "Choose an account" && (
+          <SelectorComponent
+            label="Choose a category"
+            options={filteredCategories.map((category) => ({
+              id: category.category_id,
+              value: category.category_id,
+              label: category.category_name,
+            }))}
+            selectedValue={state.category_id}
+            onChange={handleCategoryChange}
+          />
+        )}
+        <input name="category_id" readOnly hidden value={state.category_id} />
         <LabeledInput
-          label="Category Name"
-          id="categoryName"
-          name="category_name"
-          value={state.category_name}
+          label="Destination Name"
+          id="destination_Name"
+          name="destination_name"
+          value={state.destination_name}
           onChange={handleChange}
         />
 
         <LabeledInput
-          label="Base Rate"
-          id="categoryBaseRate"
-          name="category_base_rate"
-          value={state.category_base_rate}
+          label="Destination Distance"
+          id="destinationDistance"
+          name="destination_distance"
+          value={state.destination_distance}
           onChange={handleChange}
         />
         {/* Status Selector */}
         <StatusSelector
           label="Status"
-          id="categoryStatus"
-          name="category_status"
-          value={state.category_status}
+          id="destinationStatus"
+          name="destination_status"
+          value={state.destination_status}
           onChange={handleChange}
         />
       </div>

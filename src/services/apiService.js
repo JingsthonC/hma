@@ -34,9 +34,10 @@ const apiService = {
 
   // Trucks
   getAllTrucks: () => axios.get(`${BASE_URL}/api/trucks`),
-  getTruckById: (id) => axios.get(`${BASE_URL}/api/truck/${id}`),
-  updateTruck: (id, data) => axios.put(`${BASE_URL}/api/truck/${id}`, data),
-  deleteTruck: (id) => axios.delete(`${BASE_URL}/api/truck/${id}`),
+  createTruck: (data) => axios.post(`${BASE_URL}/api/trucks`, data),
+  getTruckById: (id) => axios.get(`${BASE_URL}/api/trucks/${id}`),
+  updateTruck: (id, data) => axios.put(`${BASE_URL}/api/trucks/${id}`, data),
+  deleteTruck: (id) => axios.delete(`${BASE_URL}/api/trucks/${id}`),
 
   // Truck Types
   getAllTruckTypes: () => axios.get(`${BASE_URL}/api/truck_types`),
@@ -47,6 +48,7 @@ const apiService = {
 
   // Customers
   getAllCustomers: () => axios.get(`${BASE_URL}/api/customers`),
+  createCustomer: (data) => axios.post(`${BASE_URL}/api/customers`, data),
   getCustomerById: (id) => axios.get(`${BASE_URL}/api/customer/${id}`),
   updateCustomer: (id, data) =>
     axios.put(`${BASE_URL}/api/customer/${id}`, data),
@@ -54,18 +56,28 @@ const apiService = {
 
   // Destinations
   getAllDestinations: () => axios.get(`${BASE_URL}/api/destinations`),
-  getDestinationById: (id) => axios.get(`${BASE_URL}/api/destination/${id}`),
+  createDestination: (data) => axios.post(`${BASE_URL}/api/destinations`, data),
+  getDestinationById: (id) => axios.get(`${BASE_URL}/api/destinations/${id}`),
   updateDestination: (id, data) =>
-    axios.put(`${BASE_URL}/api/destination/${id}`, data),
-  deleteDestination: (id) => axios.delete(`${BASE_URL}/api/destination/${id}`),
+    axios.put(`${BASE_URL}/api/destinations/${id}`, data),
+  deleteDestination: (id) => axios.delete(`${BASE_URL}/api/destinations/${id}`),
 
   // Categories
   getAllCategories: () => axios.get(`${BASE_URL}/api/categories`),
   getCategoryById: (id) => axios.get(`${BASE_URL}/api/categories/${id}`),
+  getFilteredCategories: (queryParams) =>
+    axios.get(`${BASE_URL}/api/categories/filter`, { params: queryParams }),
   createCategory: (data) => axios.post(`${BASE_URL}/api/categories`, data),
   updateCategory: (id, data) =>
     axios.put(`${BASE_URL}/api/categories/${id}`, data),
   deleteCategory: (id) => axios.delete(`${BASE_URL}/api/categories/${id}`),
+
+  // SubContractors
+  getAllSubCons: () => axios.get(`${BASE_URL}/api/subcons`),
+  createSubCon: (data) => axios.post(`${BASE_URL}/api/subcons`, data),
+  getSubConById: (id) => axios.get(`${BASE_URL}/api/subcons/${id}`),
+  updateSubCon: (id, data) => axios.put(`${BASE_URL}/api/subcons/${id}`, data),
+  deleteSubCon: (id) => axios.delete(`${BASE_URL}/api/subcons/${id}`),
 
   // Transactions
   // getAllTransactions: () => axios.get(`${BASE_URL}/api/transactions`),

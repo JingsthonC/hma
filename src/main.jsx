@@ -68,6 +68,50 @@ import AddCategory, {
   loader as addCategoryLoader,
   action as addCategoryAction,
 } from "./features/categories/AddCategory.jsx";
+import Destinations, {
+  loader as destinationsLoader,
+} from "./features/destinations/Destinations.jsx";
+import EditDestination, {
+  loader as destinationLoader,
+  action as editDestinationAction,
+} from "./features/destinations/EditDestination.jsx";
+import { action as destroyDestinationAction } from "./features/destinations/destroyDestination.js";
+import AddDestination, {
+  loader as addDestinationLoader,
+  action as addDestinationAction,
+} from "./features/destinations/AddDestination.jsx";
+import Customers, {
+  loader as customersLoader,
+} from "./features/customers/Customers.jsx";
+import EditCustomer, {
+  loader as customerLoader,
+  action as editCustomerAction,
+} from "./features/customers/EditCustomer.jsx";
+import { action as destroyCustomerAction } from "./features/customers/destroyCustomer.js";
+import AddCustomer, {
+  action as addCustomerAction,
+} from "./features/customers/AddCustomer.jsx";
+import SubContractors, {
+  loader as subConsLoader,
+} from "./features/subcontractors/SubContractors.jsx";
+import EditSubContractor, {
+  loader as subConLoader,
+  action as editSubConAction,
+} from "./features/subcontractors/EditSubContractor.jsx";
+import AddSubContractor, {
+  action as addSubConAction,
+} from "./features/subcontractors/AddSubContractor.jsx";
+import { action as destroySubConAction } from "./features/subcontractors/destroySubContractor.js";
+import Trucks, { loader as trucksLoader } from "./features/trucks/Trucks.jsx";
+import EditTruck, {
+  loader as truckLoader,
+  action as editTruckAction,
+} from "./features/trucks/EditTruck.jsx";
+import { action as destroyTruckAction } from "./features/trucks/destroyTruck.js";
+import AddTruck, {
+  loader as addTruckSubConLoader,
+  action as addTruckAction,
+} from "./features/trucks/AddTruck.jsx";
 
 const router = createBrowserRouter([
   {
@@ -183,25 +227,96 @@ const router = createBrowserRouter([
         errorElement: <div>Oops! There was an error.</div>,
       },
       {
+        path: "destinations",
+        loader: destinationsLoader,
+        element: <Destinations />,
+      },
+      {
+        path: "destinations/add",
+        loader: addDestinationLoader,
+        action: addDestinationAction,
+        element: <AddDestination />,
+      },
+      {
+        path: "destinations/:destinationId",
+        loader: destinationLoader,
+        action: editDestinationAction,
+        element: <EditDestination />,
+      },
+      {
+        path: "destinations/:destinationId/destroy",
+        action: destroyDestinationAction,
+        errorElement: <div>Oops! There was an error.</div>,
+      },
+      {
+        path: "customers",
+        loader: customersLoader,
+        element: <Customers />,
+      },
+      {
+        path: "customers/add",
+        action: addCustomerAction,
+        element: <AddCustomer />,
+      },
+      {
+        path: "customers/:customerId",
+        loader: customerLoader,
+        action: editCustomerAction,
+        element: <EditCustomer />,
+      },
+      {
+        path: "customers/:customerId/destroy",
+        action: destroyCustomerAction,
+        errorElement: <div>Oops! There was an error.</div>,
+      },
+
+      {
         path: "subcons",
-        element: <div>subcons</div>,
+        loader: subConsLoader,
+        element: <SubContractors />,
+      },
+      {
+        path: "subcons/add",
+        loader: addTruckSubConLoader,
+        action: addSubConAction,
+        element: <AddSubContractor />,
+      },
+      {
+        path: "subcons/:subConId",
+        loader: subConLoader,
+        action: editSubConAction,
+        element: <EditSubContractor />,
+      },
+      {
+        path: "subcons/:subConId/destroy",
+        action: destroySubConAction,
+        errorElement: <div>Oops! There was an error.</div>,
       },
       {
         path: "trucks",
-        element: <div>trucks</div>,
+        loader: trucksLoader,
+        element: <Trucks />,
+      },
+      {
+        path: "trucks/add",
+        loader: addTruckSubConLoader,
+        action: addTruckAction,
+        element: <AddTruck />,
+      },
+      {
+        path: "trucks/:truckId",
+        loader: truckLoader,
+        action: editTruckAction,
+        element: <EditTruck />,
+      },
+      {
+        path: "trucks/:truckId/destroy",
+        action: destroyTruckAction,
+        errorElement: <div>Oops! There was an error.</div>,
       },
       {
         path: "truck-types",
         element: <div>truck-types</div>,
-      },
-      {
-        path: "customers",
-        element: <div>customer</div>,
-      },
-
-      {
-        path: "destinations",
-        element: <div>destinations</div>,
       },
       {
         path: "accounts",

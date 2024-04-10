@@ -38,37 +38,34 @@ export default function Categories() {
           </button>
         </Link>
       </div>
-      <div className="flex h-full flex-wrap gap-5 overflow-y-auto py-4">
-        <div>
-          {Object.entries(separatedData).map(([account, accountData]) => (
-            <div key={account} className="gap-4 p-4">
-              <h2 className="mb-4 text-xl font-bold">{account}</h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {accountData.map((entry) => (
-                  <Link key={entry.category_id} to={`${entry.category_id}`}>
-                    <div
-                      className={`rounded-lg p-6 shadow-md ${entry.category_status === "active" ? "bg-green-200" : "bg-red-200"}`}
-                      key={entry.category_id}
-                    >
-                      <h3 className="mb-2 text-lg font-semibold">
-                        {entry.category_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Category ID: {entry.category_id}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Base Rate: {entry.category_base_rate}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Status: {entry.category_status}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+      <div className="flex h-full flex-wrap gap-5 py-4">
+        {Object.entries(separatedData).map(([account, accountData]) => (
+          <div key={account} className="w-full gap-4 self-center p-4 md:w-1/5">
+            <h2 className="mb-4 text-center text-xl font-bold">{account}</h2>
+            <div className="max-h-96 overflow-y-auto">
+              {accountData.map((entry) => (
+                <Link key={entry.category_id} to={`${entry.category_id}`}>
+                  <div
+                    className={`my-2 rounded-lg p-6 shadow-md ${entry.category_status === "active" ? "bg-green-200" : "bg-red-200"}`}
+                  >
+                    <h3 className="mb-2 text-lg font-semibold">
+                      {entry.category_name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Category ID: {entry.category_id}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Base Rate: {entry.category_base_rate}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Status: {entry.category_status}
+                    </p>
+                  </div>
+                </Link>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </>
   );
