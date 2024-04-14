@@ -11,9 +11,12 @@ const apiService = {
 
   // Staffs
   getAllStaffs: () => axios.get(`${BASE_URL}/api/staffs`),
-  getStaffById: (id) => axios.get(`${BASE_URL}/api/staff/${id}`),
-  updateStaff: (id, data) => axios.put(`${BASE_URL}/api/staff/${id}`, data),
-  deleteStaff: (id) => axios.delete(`${BASE_URL}/api/staff/${id}`),
+  registerStaff: (data) => axios.post(`${BASE_URL}/api/staffs`, data),
+  getStaffById: (id) => axios.get(`${BASE_URL}/api/staffs/${id}`),
+  updateStaff: (id, data) => axios.put(`${BASE_URL}/api/staffs/${id}`, data),
+  updateStaffAvatar: (id, data) =>
+    axios.put(`${BASE_URL}/staffs/image-upload${id}`, data),
+  deleteStaff: (id) => axios.delete(`${BASE_URL}/api/staffs/${id}`),
 
   // Accounts
   // getAllAccounts: () => axios.get(`${BASE_URL}/api/accounts`),

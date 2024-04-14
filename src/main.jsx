@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { AuthProvider } from "./AuthContext.jsx";
 import "./index.css";
 // import { AuthProvider } from "./AuthContext.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -16,7 +17,7 @@ import Dashboard, {
 } from "./features/dashboard/Dashboard.jsx";
 import Login from "./Login.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
-import { AuthProvider } from "./AuthContext.jsx";
+
 import BillingSummaries, {
   loader as billingSummariesLoader,
   action as addBillingSummaryAction,
@@ -123,6 +124,15 @@ import AddTruckType, {
   action as addTruckTypeAction,
 } from "./features/truck_types/AddTruckType.jsx";
 import { action as destroyTruckTypeAction } from "./features/truck_types/destoryTruckType.js";
+import RegisterStaff, {
+  action as registerStaffAction,
+} from "./features/staffs/RegisterStaff.jsx";
+import Staffs, { loader as staffsLoader } from "./features/staffs/Staffs.jsx";
+import EditStaff, {
+  loader as staffLoader,
+  action as editStaffAction,
+} from "./features/staffs/EditStaff.jsx";
+import { action as destroyStaffAction } from "./features/staffs/destroyStaff.js";
 
 const router = createBrowserRouter([
   {
@@ -347,12 +357,25 @@ const router = createBrowserRouter([
         errorElement: <div>Oops! There was an error.</div>,
       },
       {
-        path: "accounts",
-        element: <div>accounts</div>,
+        path: "staffs",
+        loader: staffsLoader,
+        element: <Staffs />,
       },
       {
-        path: "staffs",
-        element: <div>staffs</div>,
+        path: "staffs/add",
+        action: registerStaffAction,
+        element: <RegisterStaff />,
+      },
+      {
+        path: "staffs/:staffId",
+        loader: staffLoader,
+        action: editStaffAction,
+        element: <EditStaff />,
+      },
+      {
+        path: "staffs/:staffId/destroy",
+        action: destroyStaffAction,
+        errorElement: <ErrorPage />,
       },
     ],
   },

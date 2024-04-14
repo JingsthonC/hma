@@ -8,7 +8,7 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const [username, setUsername] = useState("user1@example.com");
+  const [username, setUsername] = useState("jingsthon@gmail.com");
   const [password, setPassword] = useState("12345");
 
   useEffect(() => {

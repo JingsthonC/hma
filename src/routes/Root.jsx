@@ -4,7 +4,7 @@ import "../App.css";
 // import { useEffect } from "react";
 // import PropTypes from "prop-types";
 import { Outlet, Link } from "react-router-dom";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../AuthContext.jsx";
 import Sidebar from "../ui/Sidebar";
 import UserProfile from "../features/users/UserProfile";
 import logo from "/logo.png";
@@ -61,7 +61,10 @@ import logo from "/logo.png";
 //version 2
 
 function Root() {
-  const { user } = useAuth;
+  // const { staff } = useAuth(); // Call the useAuth hook to get the context value
+  // console.log("user in useAuth", staff);
+  const staffInfo = JSON.parse(localStorage.getItem("staff"));
+  // console.log("user in useAuth", staffInfo.email);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -85,7 +88,7 @@ function Root() {
                 </span>
               </div>
             </div>
-            <UserProfile user={user} />
+            <UserProfile user={staffInfo} />
           </div>
         </div>
       </header>
